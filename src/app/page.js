@@ -1,65 +1,127 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import LayoutSelector from "./components/LayoutSelector";
+import { INITIAL_DATA } from "./data/internships-mock";
+import { List, LayoutGrid } from "lucide-react";
+import StatusColumn from "./components/StatusColumn";
 
 export default function Home() {
+  const [activeLayout, setActiveLayout] = useState("board");
+  const [internships, setInternships] = useState(INITIAL_DATA);
+  const initialStatus = [
+    {
+      name: "To Apply",
+      internships: internships.filter(
+        (internship) => internship.status === "toApply",
+      ),
+    },
+    {
+      name: "Waiting for Response",
+      internships: internships.filter(
+        (internship) => internship.status === "waitingforResponse",
+      ),
+    },
+    {
+      name: "Considering Offer",
+      internships: internships.filter(
+        (internship) => internship.status === "consideringOffer",
+      ),
+    },
+    {
+      name: "Accepted",
+      internships: internships.filter(
+        (internship) => internship.status === "accepted",
+      ),
+    },
+  ];
+  console.log(initialStatus);
+
+  const [status, setStatus] = useState(initialStatus);
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className=" font-sans flex min-h-screen flex-col items-center justify-between p-24 bg-slate-50 ">
+      <div className="w-full flex flex-row justify-between">
+        <div className="flex flex-row text-black border border-gray-300 rounded-xl p-4 gap-2 bg-white">
+          <LayoutSelector
+            name="Board"
+            Icon={LayoutGrid}
+            activeLayout={activeLayout}
+            setActiveLayout={setActiveLayout}
+          />
+          <LayoutSelector
+            name="List"
+            Icon={List}
+            activeLayout={activeLayout}
+            setActiveLayout={setActiveLayout}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="text-black">
+          Sort by:
+          <select className="ml-2 p-2 rounded">
+            <option value="deadline">Deadline</option>
+          </select>
         </div>
-      </main>
-    </div>
+      </div>
+      <div className="overflow-hidden w-full">
+        {activeLayout === "board" && (
+          <div className="flex flex-row overflow-x-auto flex-nowrap w-full gap-8">
+            {status.map((statusItem) => {
+              const { name, internships } = statusItem;
+              return (
+                <StatusColumn
+                  key={name}
+                  name={name}
+                  internships={internships}
+                ></StatusColumn>
+              );
+            })}
+          </div>
+        )}
+        {activeLayout === "list" && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                  <th className="p-4 font-semibold">Company / Role</th>
+                  <th className="p-4 font-semibold">Status</th>
+                  <th className="p-4 font-semibold">Location</th>
+                  <th className="p-4 font-semibold">Deadline</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {internships.map((internship) => (
+                  <tr
+                    key={internship.id}
+                    className="hover:bg-slate-50 cursor-pointer transition-colors group"
+                  >
+                    <td className="p-4">
+                      <div className="font-semibold text-slate-900">
+                        {internship.company}
+                      </div>
+                      <div className="text-sm text-slate-500">
+                        {internship.role}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      {status.map((s) => {
+                        let array = s.name.split(" ");
+                        array[0] = array[0].toLowerCase();
+                        if (array.join("") === internship.status) {
+                          return s.name;
+                        }
+                      })}
+                    </td>
+                    <td className="p-4">{internship.place}</td>
+                    <td className="p-4">
+                      {new Date(internship.deadline).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
