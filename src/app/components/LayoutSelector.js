@@ -13,7 +13,7 @@ export default function LayoutSelector({
       : "transparent text-gray-600";
   return (
     <motion.div
-      className="relative flex flex flex-row items-center"
+      className="relative flex flex-row items-center"
       onClick={() => {
         setActiveLayout(name.toLowerCase());
       }}
@@ -33,10 +33,10 @@ export default function LayoutSelector({
         ></motion.div>
       )}
       <div
-        className={`z-10 flex flex-row gap-4 py-4 px-4 rounded-xl hover:bg-gray-100 cursor-pointer ${bg}`}
+        className={`z-10 flex flex-row gap-2 py-3 px-3 rounded-xl hover:bg-gray-100 cursor-pointer ${bg}`}
       >
-        <Icon className="w-7 h-7" />
-        <span className="text-xl font-semibold">{name}</span>
+        <Icon className="w-6 h-6" />
+        <span className="text-lg font-semibold">{name}</span>
       </div>
     </motion.div>
   );
