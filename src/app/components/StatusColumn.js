@@ -1,7 +1,12 @@
 import InternshipBoard from "./InternshipBoard";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 
-export default function StatusColumn({ internships, name }) {
+export default function StatusColumn({
+  internships,
+  name,
+  setInternshipWindow,
+  evaluationWeights,
+}) {
   console.log(name);
   const styleArray = name.split(" ");
   styleArray[0] = styleArray[0].toLowerCase();
@@ -22,6 +27,8 @@ export default function StatusColumn({ internships, name }) {
           <InternshipBoard
             key={internship.id}
             internship={internship}
+            setInternshipWindow={setInternshipWindow}
+            evaluationWeights={evaluationWeights}
           ></InternshipBoard>
         );
       })}

@@ -1,11 +1,16 @@
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { Star } from "lucide-react";
+import { calculateScore } from "../tools/functions";
 
-export default function InternshipList({ internship, status }) {
+export default function InternshipList({
+  internship,
+  status,
+  setInternshipWindow,
+  evaluationWeights,
+}) {
   let statusName;
   let statusStyle;
-  const averageScore =
-    Object.values(internship.evaluation).reduce((a, b) => a + b, 0) / 5;
+  const averageScore = calculateScore(internship.evaluation, evaluationWeights);
   const progress = (
     (Object.values(internship.requirements).filter((r) => r.done).length /
       internship.requirements.length) *
@@ -30,6 +35,12 @@ export default function InternshipList({ internship, status }) {
     <tr
       key={internship.id}
       className=" cursor-pointer group hover:shadow-2xl  transition-all duration-300 hover:-translate-x-3 hover:bg-cyan-50 group"
+      onClick={() => {
+        setInternshipWindow({
+          active: true,
+          internship: internship,
+        });
+      }}
     >
       <td className="p-4">
         <div className="text-base font-semibold text-slate-900 sm:text-lg md:text-xl tracking-wide group-hover:text-blue-800">
@@ -54,7 +65,7 @@ export default function InternshipList({ internship, status }) {
          flex-row"
         >
           <Star className=" fill-amber-400 w-6 h-6 text-amber-600  pb-1" />
-          {averageScore.toFixed(1)}
+          {averageScore}
         </div>
       </td>
       <td className="p-4 ">
