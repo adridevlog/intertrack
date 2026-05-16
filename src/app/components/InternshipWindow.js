@@ -33,8 +33,9 @@ export default function InternshipWindow({
   internship,
   setInternships,
   setInternshipWindow,
-  status,
+  statusList,
   evaluationWeights,
+  internships,
 }) {
   const [formData, setFormData] = useState({
     company: internship?.company || "",
@@ -78,7 +79,8 @@ export default function InternshipWindow({
   console.log(formData);
   let statusName;
   let statusStyle;
-  status.map((s) => {
+  console.log(statusList);
+  statusList.map((s) => {
     let array = s.name.split(" ");
     array[0] = array[0].toLowerCase();
     if (array.join("") === internship.status) {
@@ -148,6 +150,12 @@ export default function InternshipWindow({
     closeWindow();
   };
 
+  const handleDeleteInternship = () => {
+    const newInternships = internships.filter((intern) => intern.id !== id);
+    setInternships(newInternships);
+    closeWindow();
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       const newRequirements = [
@@ -183,7 +191,7 @@ export default function InternshipWindow({
 
   return (
     <div
-      className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-50 px-backdrop-blur-xs"
+      className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-120 px-backdrop-blur-xs"
       onClick={closeWindow} // Optional: closes when clicking outside
     >
       <div
@@ -517,19 +525,27 @@ export default function InternshipWindow({
             </div>
           )}
         </div>
-        <div className="shrink-0 px-6 py-4 flex flex-row gap-4 justify-end border-t border-gray-300 rounded-b-2xl">
+        <div className="shrink-0 px-4 py-4 flex flex-row justify-between border-t border-gray-300 rounded-b-2xl">
           <button
-            className="text-gray-700 hover:bg-gray-200 transition-all text-md rounded-lg px-4 py-2 cursor-pointer tracking-wide font-medium"
-            onClick={closeWindow}
+            className="text-red-600 hover:text-red-800 px-4 py-2 rounded-lg cursor-pointer tracking-wide font-bold transition-all"
+            onClick={handleDeleteInternship}
           >
-            Cancel
+            Delete Internship
           </button>
-          <button
-            className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide"
-            onClick={handleSaveChanges}
-          >
-            Save Changes
-          </button>
+          <div className="flex gap-3 items-center">
+            <button
+              className="text-gray-700 hover:bg-gray-200 transition-all text-md rounded-lg px-4 py-2 cursor-pointer tracking-wide font-medium"
+              onClick={closeWindow}
+            >
+              Cancel
+            </button>
+            <button
+              className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide"
+              onClick={handleSaveChanges}
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     </div>

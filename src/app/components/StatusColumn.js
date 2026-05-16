@@ -6,7 +6,9 @@ export default function StatusColumn({
   name,
   setInternshipWindow,
   evaluationWeights,
+  status,
 }) {
+  const filteredInternships = internships.filter((i) => i.status === status);
   console.log(name);
   const styleArray = name.split(" ");
   styleArray[0] = styleArray[0].toLowerCase();
@@ -20,9 +22,9 @@ export default function StatusColumn({
         className={`rounded-xl font-semibold border px-5 py-3 text-lg flex flex-row justify-between ${statusStyle}`}
       >
         <div>{name}</div>
-        <div>{internships.length}</div>
+        <div>{filteredInternships.length}</div>
       </div>
-      {internships.map((internship) => {
+      {filteredInternships.map((internship) => {
         return (
           <InternshipBoard
             key={internship.id}

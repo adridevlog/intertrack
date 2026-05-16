@@ -4,7 +4,7 @@ import { calculateScore } from "../tools/functions";
 
 export default function InternshipList({
   internship,
-  status,
+  statusList,
   setInternshipWindow,
   evaluationWeights,
 }) {
@@ -16,7 +16,7 @@ export default function InternshipList({
       internship.requirements.length) *
     100
   ).toFixed(0);
-  status.map((s) => {
+  statusList.map((s) => {
     let array = s.name.split(" ");
     array[0] = array[0].toLowerCase();
     if (array.join("") === internship.status) {

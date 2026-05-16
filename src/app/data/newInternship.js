@@ -1,0 +1,28 @@
+export const newInternship = {
+  id: "1",
+  company: "Company/Lab Name",
+  role: "Role / Position",
+  category: "",
+  status: "toApply",
+  excerpt: "",
+  type: "",
+  location: "",
+  salary: "",
+  duration: "",
+  link: "",
+  deadline: "",
+  requirements: [],
+  interview: {
+    date: "",
+    tips: "",
+    notes: "",
+  },
+  evaluation: {
+    money: 1,
+    place: 1,
+    duration: 1,
+    supervisor: 1,
+    prestige: 1,
+  },
+  acceptedDate: null,
+};
