@@ -7,6 +7,7 @@ export default function StatusColumn({
   setInternshipWindow,
   evaluationWeights,
   status,
+  handleStatusChange,
 }) {
   const filteredInternships = internships.filter((i) => i.status === status);
   console.log(name);
@@ -15,9 +16,28 @@ export default function StatusColumn({
   const statusStyle =
     STATUS_STYLES[styleArray.join("")] || "bg-gray-200 text-gray-800";
 
-  console.log(styleArray.join(""));
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Crucial! Without this, the drop event will never fire.
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+
+    // Read the ID we saved during onDragStart
+    const draggedInternshipId = e.dataTransfer.getData("text/plain");
+
+    // Do nothing if the ID is missing
+    if (!draggedInternshipId) return;
+
+    // Call a function to update our React State (we will write this in Step 3)
+    handleStatusChange(draggedInternshipId, status); // 'status' is the column's target status (e.g., 'accepted')
+  };
   return (
-    <div className="flex flex-col min-w-100 grow-0 basis-auto shrink-0 gap-4">
+    <div
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className="flex flex-col min-w-100 grow-0 basis-auto shrink-0 gap-4 pb-14"
+    >
       <div
         className={`rounded-xl font-semibold border px-5 py-3 text-lg flex flex-row justify-between ${statusStyle}`}
       >

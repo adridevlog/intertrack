@@ -19,8 +19,26 @@ export default function InternshipBoard({
     month: "short",
     day: "numeric",
   });
+
+  const handleDragStart = (e) => {
+    // Save the ID of the internship being dragged into the browser's memory
+    e.dataTransfer.setData("text/plain", internship.id);
+
+    setTimeout(() => {
+      e.target.style.opacity = "0.5";
+    }, 0);
+  };
+
+  const handleDragEnd = (e) => {
+    // Restore opacity when the drag finishes
+    e.target.style.opacity = "1";
+  };
+
   return (
     <div
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       className="flex flex-col p-6 border border-slate-200 bg-white rounded-xl gap-1 cursor-pointer hover:shadow-2xl  transition-all duration-300 hover:-translate-y-2 hover:bg-cyan-50 group"
       onClick={() => {
         setInternshipWindow({

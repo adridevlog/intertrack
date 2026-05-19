@@ -9,6 +9,7 @@ import StatusColumn from "./components/StatusColumn";
 import InternshipList from "./components/InternshipList";
 import InternshipWindow from "./components/InternshipWindow";
 import { useInternship } from "./context/InternshipContext.js";
+import { calculateScore } from "./tools/functions";
 
 export default function Home() {
   const [activeLayout, setActiveLayout] = useState("board");
@@ -17,6 +18,7 @@ export default function Home() {
   const [evaluationWeights, setEvaluationWeights] = useState(
     INITIAL_evaluationWeights,
   );
+  const [sort, setSort] = useState("status");
 
   const statusList = [
     {
@@ -37,6 +39,20 @@ export default function Home() {
     },
   ];
 
+  const updateInternshipStatus = (internshipId, newStatus) => {
+    setInternships((prevInternships) => {
+      return prevInternships.map((intern) => {
+        // Find the one we dragged
+        if (intern.id === internshipId) {
+          // Return a copy of it with the updated status
+          return { ...intern, status: newStatus };
+        }
+        // Leave all other internships exactly as they are
+        return intern;
+      });
+    });
+  };
+
   useEffect(() => {
     if (internshipWindow.active) {
       // Prevent scrolling on the body
@@ -52,6 +68,37 @@ export default function Home() {
     };
   }, [internshipWindow.active]); // Re-run this whenever the window opens or closes
 
+  let sortedInternships = [...internships];
+
+  if (sort === "status") {
+    sortedInternships.sort((a, b) => {
+      return (
+        statusList.findIndex((s) => s.status === b.status) -
+        statusList.findIndex((s) => s.status === a.status)
+      );
+    });
+  } else if (sort === "evaluation") {
+    sortedInternships.sort((a, b) => {
+      const scoreA = calculateScore(a.evaluation, evaluationWeights);
+      const scoreB = calculateScore(b.evaluation, evaluationWeights);
+      return scoreB - scoreA; // Sort descending
+    });
+  } else if (sort === "deadline") {
+    sortedInternships.sort(
+      (a, b) => new Date(a.deadline) - new Date(b.deadline),
+    );
+  } else if (sort === "progress") {
+    sortedInternships.sort((a, b) => {
+      const progressA =
+        Object.values(a.requirements).filter((r) => r.done).length /
+        a.requirements.length;
+      const progressB =
+        Object.values(b.requirements).filter((r) => r.done).length /
+        b.requirements.length;
+      return progressB - progressA; // Sort descending
+    });
+  }
+
   return (
     <main className="mt-22 pt-14 font-sans flex min-h-screen h-full flex-col items-center justify-between p-8 bg-slate-50 ">
       {internshipWindow?.active && (
@@ -61,7 +108,7 @@ export default function Home() {
           setInternshipWindow={setInternshipWindow}
           statusList={statusList}
           evaluationWeights={evaluationWeights}
-          internships={internships}
+          internships={sortedInternships}
         ></InternshipWindow>
       )}
       <div
@@ -88,11 +135,15 @@ export default function Home() {
           </div>
           <div className="text-gray-500 font-semibold">
             Sort by:
-            <select className="ml-2 p-2 font-medium text-gray-600 bg-white ring-2 ring-gray-200 rounded focus:ring-2 focus:ring-blue-500 active:ring-0">
-              <option value="status">Status (Default)</option>
-              <option value="evaluation">Evaluation score (Default)</option>
+            <select
+              className="ml-2 p-2 font-medium text-gray-600 bg-white ring-2 ring-gray-200 rounded focus:ring-2 focus:ring-blue-500 active:ring-0"
+              onChange={(e) => setSort(e.target.value)}
+              value={sort}
+            >
+              <option value="status">Status</option>
+              <option value="evaluation">Evaluation score</option>
               <option value="deadline">Deadline</option>
-              <option value="progress">Requirements progress (Default)</option>
+              <option value="progress">Requirements progress</option>
             </select>
           </div>
         </div>
@@ -105,10 +156,11 @@ export default function Home() {
                   <StatusColumn
                     key={name}
                     name={name}
-                    internships={internships}
+                    internships={sortedInternships}
                     status={status}
                     setInternshipWindow={setInternshipWindow}
                     evaluationWeights={evaluationWeights}
+                    handleStatusChange={updateInternshipStatus}
                   ></StatusColumn>
                 );
               })}
@@ -127,7 +179,7 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {internships.map((internship) => (
+                  {sortedInternships.map((internship) => (
                     <InternshipList
                       key={internship.id}
                       internship={internship}
