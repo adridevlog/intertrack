@@ -1,4 +1,11 @@
-import { MapPin, Calendar, StarIcon, Star } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  StarIcon,
+  Star,
+  DollarSign,
+  Clock,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { calculateScore } from "../tools/functions";
 
@@ -7,15 +14,24 @@ export default function InternshipBoard({
   setInternshipWindow,
   evaluationWeights,
 }) {
-  let { role, evaluation, company, position, location, status, deadline } =
-    internship;
+  let {
+    role,
+    evaluation,
+    company,
+    position,
+    location,
+    status,
+    deadline,
+    salary,
+    duration,
+  } = internship;
   const averageScore = calculateScore(evaluation, evaluationWeights);
   const progress = (
     (Object.values(internship.requirements).filter((r) => r.done).length /
       internship.requirements.length) *
     100
   ).toFixed(0);
-  deadline = new Date(deadline).toLocaleDateString("en-US", {
+  const deadlineDate = new Date(deadline).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
@@ -58,24 +74,44 @@ export default function InternshipBoard({
       </div>
       <div className="text-gray-600 font-semibold  text-md">{role}</div>
       <div className="mt-3 flex flex-row gap-2 items-center text-md text-gray-800 ">
-        <div className="rounded-lg py-1 px-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center ">
-          <MapPin className="w-5 h-5 text-gray-700  pb-1" />
-          <div className="text-xs">{location}</div>
-        </div>
-        <div className="rounded-lg p-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center py-1 px-2">
-          <Calendar className="w-5 h-5 text-gray-700 pb-1" />
-          <div className="text-xs">{deadline}</div>
-        </div>
+        {location && (
+          <div className="rounded-lg py-1 px-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center ">
+            <MapPin className="w-4 h-4 text-gray-700 " />
+            <div className="text-xs">{location}</div>
+          </div>
+        )}
+        {deadline && (
+          <div className="rounded-lg p-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center py-1 px-2">
+            <Calendar className="w-4 h-4 text-gray-700" />
+            <div className="text-xs">{deadlineDate}</div>
+          </div>
+        )}
+        {salary && (
+          <div className="rounded-lg p-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-0.5 items-center py-1 px-2">
+            <DollarSign className="w-4 h-4 text-gray-700" />
+            <div className="text-xs">{salary}</div>
+          </div>
+        )}
+        {duration && (
+          <div className="rounded-lg p-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center py-1 px-2">
+            <Clock className="w-4 h-4 text-gray-700" />
+            <div className="text-xs">{duration}</div>
+          </div>
+        )}
       </div>
-      <div className="flex items-center gap-2 mt-4">
-        <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-indigo-500 rounded-full"
-            style={{ width: `${progress}%` }}
-          />
+      {internship.requirements.length > 0 && (
+        <div className="flex items-center gap-2 mt-4">
+          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-500 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-xs text-slate-500 font-medium">
+            {progress}%
+          </span>
         </div>
-        <span className="text-xs text-slate-500 font-medium">{progress}%</span>
-      </div>
+      )}
     </div>
   );
 }

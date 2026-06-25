@@ -10,15 +10,53 @@ import InternshipList from "./components/InternshipList";
 import InternshipWindow from "./components/InternshipWindow";
 import { useInternship } from "./context/InternshipContext.js";
 import { calculateScore } from "./tools/functions";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, db, googleProvider } from "../../firebase.js";
+import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import {
+  updateInternship,
+  updatePreferenceInCloud,
+} from "./tools/functions.js";
+import { useAuthenticationChanges } from "./hooks/useAuthenticationChanges.js";
+import { useListenToData } from "./hooks/useListenToData.js";
+import { useLoading, useUser } from "./context/InternshipContext.js";
 
 export default function Home() {
+  const { user, setUser } = useUser();
+  const { loading, setLoading } = useLoading();
   const [activeLayout, setActiveLayout] = useState("board");
-  const { internshipWindow, setInternshipWindow, internships, setInternships } =
-    useInternship();
+  const {
+    internshipWindow,
+    setInternshipWindow,
+    internships,
+    setInternships,
+    searchQuery,
+  } = useInternship();
   const [evaluationWeights, setEvaluationWeights] = useState(
     INITIAL_evaluationWeights,
   );
   const [sort, setSort] = useState("status");
+  useAuthenticationChanges();
+  useListenToData({ setActiveLayout, setSort });
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
+  const handlePreferenceChange = (e) => {
+    const { name, value } = e.target;
+    updatePreferenceInCloud(name, value, user);
+  };
 
   const statusList = [
     {
@@ -40,17 +78,7 @@ export default function Home() {
   ];
 
   const updateInternshipStatus = (internshipId, newStatus) => {
-    setInternships((prevInternships) => {
-      return prevInternships.map((intern) => {
-        // Find the one we dragged
-        if (intern.id === internshipId) {
-          // Return a copy of it with the updated status
-          return { ...intern, status: newStatus };
-        }
-        // Leave all other internships exactly as they are
-        return intern;
-      });
-    });
+    updateInternship(internshipId, { status: newStatus }, user);
   };
 
   useEffect(() => {
@@ -68,8 +96,20 @@ export default function Home() {
     };
   }, [internshipWindow.active]); // Re-run this whenever the window opens or closes
 
-  let sortedInternships = [...internships];
+  // 2. Filter the internships based on the search query
+  let filteredInternships = internships.filter((internship) => {
+    // If the search bar is empty, this simply returns true for everything
+    if (!searchQuery) return true;
 
+    const query = searchQuery.toLowerCase();
+    const companyMatch =
+      internship.company?.toLowerCase().includes(query) || false;
+    const roleMatch = internship.role?.toLowerCase().includes(query) || false;
+
+    return companyMatch || roleMatch;
+  });
+
+  let sortedInternships = [...filteredInternships];
   if (sort === "status") {
     sortedInternships.sort((a, b) => {
       return (
@@ -99,6 +139,20 @@ export default function Home() {
     });
   }
 
+  if (loading) return <div>Loading your cloud workspace...</div>;
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold mb-4">Welcome to InternTrack</h1>
+        <button
+          onClick={handleLogin}
+          className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold"
+        >
+          Sign in with Google
+        </button>
+      </div>
+    );
+  }
   return (
     <main className="mt-22 pt-14 font-sans flex min-h-screen h-full flex-col items-center justify-between p-8 bg-slate-50 ">
       {internshipWindow?.active && (
@@ -124,20 +178,21 @@ export default function Home() {
               name="Board"
               Icon={LayoutGrid}
               activeLayout={activeLayout}
-              setActiveLayout={setActiveLayout}
+              setActiveLayout={handlePreferenceChange}
             />
             <LayoutSelector
               name="List"
               Icon={List}
               activeLayout={activeLayout}
-              setActiveLayout={setActiveLayout}
+              setActiveLayout={handlePreferenceChange}
             />
           </div>
           <div className="text-gray-500 font-semibold">
             Sort by:
             <select
               className="ml-2 p-2 font-medium text-gray-600 bg-white ring-2 ring-gray-200 rounded focus:ring-2 focus:ring-blue-500 active:ring-0"
-              onChange={(e) => setSort(e.target.value)}
+              name="sort"
+              onChange={handlePreferenceChange}
               value={sort}
             >
               <option value="status">Status</option>

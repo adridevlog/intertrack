@@ -1,5 +1,4 @@
 export const newInternship = {
-  id: "1",
   company: "Company/Lab Name",
   role: "Role / Position",
   category: "",

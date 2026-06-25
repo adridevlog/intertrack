@@ -11,15 +11,27 @@ export function InternshipProvider({ children }) {
     internship: null,
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [internships, setInternships] = useState(INITIAL_DATA);
+
+  const [loading, setLoading] = useState(false);
+
+  const [user, setUser] = useState(null);
 
   return (
     <InternshipContext.Provider
       value={{
         internshipWindow,
         setInternshipWindow,
+        searchQuery,
+        setSearchQuery,
         internships,
         setInternships,
+        loading,
+        setLoading,
+        user,
+        setUser,
       }}
     >
       {children}
@@ -29,5 +41,17 @@ export function InternshipProvider({ children }) {
 
 // 3. Create a custom hook to use it easily
 export function useInternship() {
+  return useContext(InternshipContext);
+}
+
+export function useLoading() {
+  return useContext(InternshipContext);
+}
+
+export function useUser() {
+  return useContext(InternshipContext);
+}
+
+export function useInternshipWindow() {
   return useContext(InternshipContext);
 }

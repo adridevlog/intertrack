@@ -14,6 +14,12 @@ import {
   calculateScore,
   calculateEvaluationKeyValue,
 } from "../tools/functions";
+import { useInternship, useUser } from "../context/InternshipContext.js";
+import {
+  addInternship,
+  updateInternship,
+  deleteInternship,
+} from "../tools/functions.js";
 
 const ICON_MAP = {
   location: MapPin,
@@ -31,11 +37,10 @@ const internshipWindowViews = [
 
 export default function InternshipWindow({
   internship,
-  setInternships,
+
   setInternshipWindow,
   statusList,
   evaluationWeights,
-  internships,
 }) {
   const [formData, setFormData] = useState({
     company: internship?.company || "",
@@ -50,6 +55,8 @@ export default function InternshipWindow({
     interview: internship?.interview || { date: "", tips: "", notes: "" },
     evaluation: internship?.evaluation || { salary: 10 },
   });
+  const { setInternships, internships } = useInternship();
+  const { user } = useUser();
   const averageScore = calculateScore(formData.evaluation, evaluationWeights);
   const evaluationKeysWidth = calculateEvaluationKeyValue(formData.evaluation);
 
@@ -76,7 +83,7 @@ export default function InternshipWindow({
     location,
     salary,
   } = internship || {};
-  console.log(formData);
+  console.log(internship);
   let statusName;
   let statusStyle;
   console.log(statusList);
@@ -142,17 +149,13 @@ export default function InternshipWindow({
   };
 
   const handleSaveChanges = () => {
-    setInternships((prevInternships) =>
-      prevInternships.map((intern) =>
-        intern.id === id ? { ...intern, ...formData } : intern,
-      ),
-    );
+    updateInternship(id, formData, user);
+
     closeWindow();
   };
 
   const handleDeleteInternship = () => {
-    const newInternships = internships.filter((intern) => intern.id !== id);
-    setInternships(newInternships);
+    deleteInternship(id, user);
     closeWindow();
   };
 
@@ -355,8 +358,9 @@ export default function InternshipWindow({
                         >
                           <input
                             type="checkbox"
-                            key={index}
+                            key={`${requirement.id}input`}
                             checked={formData.requirements[index]?.done}
+                            readOnly
                             className="w-4 h-4  bg-blue-500 rounded focus:ring-indigo-500 focus:ring-2 transition-all duration-200 border-none cursor-pointer"
                           />
                           <span className={style}>{requirement.text}</span>

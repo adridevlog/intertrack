@@ -1,5 +1,7 @@
 "use client";
 import { motion } from "motion/react";
+import { useInternship } from "../context/InternshipContext";
+import { updatePreferenceInCloud } from "../tools/functions";
 
 export default function LayoutSelector({
   name,
@@ -7,6 +9,7 @@ export default function LayoutSelector({
   activeLayout,
   setActiveLayout,
 }) {
+  const { user } = useInternship();
   const bg =
     activeLayout === name.toLowerCase()
       ? "transparent text-blue-600"
@@ -15,7 +18,7 @@ export default function LayoutSelector({
     <motion.div
       className="relative flex flex-row items-center"
       onClick={() => {
-        setActiveLayout(name.toLowerCase());
+        updatePreferenceInCloud("layout", name.toLowerCase(), user);
       }}
       whileTap={{ scale: 0.85 }}
     >

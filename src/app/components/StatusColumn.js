@@ -10,7 +10,6 @@ export default function StatusColumn({
   handleStatusChange,
 }) {
   const filteredInternships = internships.filter((i) => i.status === status);
-  console.log(name);
   const styleArray = name.split(" ");
   styleArray[0] = styleArray[0].toLowerCase();
   const statusStyle =
