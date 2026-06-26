@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { calculateScore } from "../tools/functions";
+import CompanyLogo from "./CompanyLogo.js";
 
 export default function InternshipBoard({
   internship,
@@ -63,10 +64,14 @@ export default function InternshipBoard({
         });
       }}
     >
-      <div className="flex flex-row justify-between">
-        <div className="font-semibold text-xl text-black group-hover:text-blue-800 transition-all">
-          {company}
+      <div className="flex flex-row justify-between items-center">
+        <div className="flex gap-3 items-center">
+          <CompanyLogo companyName={company} size={25} />
+          <div className="font-semibold text-xl text-black group-hover:text-blue-800 transition-all">
+            {company}
+          </div>
         </div>
+
         <div className="border border-amber-300 text-amber-700  px-2 py-1 rounded-lg bg-amber-50 font-semibold flex flex-row gap-1 items-center">
           <Star className=" fill-amber-400 w-6 h-6 text-amber-600  pb-1" />
           <div className="text-md">{averageScore}</div>

@@ -1,6 +1,7 @@
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { Star } from "lucide-react";
 import { calculateScore } from "../tools/functions";
+import CompanyLogo from "./CompanyLogo";
 
 export default function InternshipList({
   internship,
@@ -34,7 +35,7 @@ export default function InternshipList({
   return (
     <tr
       key={internship.id}
-      className=" cursor-pointer group hover:shadow-2xl  transition-all duration-300 hover:-translate-x-3 hover:bg-cyan-50 group"
+      className=" cursor-pointer group hover:shadow-xl  transition-all duration-300 hover:-translate-x-2 hover:bg-blue-50 group"
       onClick={() => {
         setInternshipWindow({
           active: true,
@@ -42,12 +43,15 @@ export default function InternshipList({
         });
       }}
     >
-      <td className="p-4">
-        <div className="text-base font-semibold text-slate-900 sm:text-lg md:text-xl tracking-wide group-hover:text-blue-800">
-          {internship.company}
-        </div>
-        <div className="text-xs sm:text-sm md:text-base lg:text-lg text-slate-500">
-          {internship.role}
+      <td className="p-4 flex items-center gap-4">
+        <CompanyLogo companyName={internship.company} />
+        <div>
+          <div className="text-base font-semibold text-slate-900 sm:text-lg md:text-xl tracking-wide group-hover:text-blue-800">
+            {internship.company}
+          </div>
+          <div className="text-xs sm:text-sm md:text-base lg:text-lg text-slate-500">
+            {internship.role}
+          </div>
         </div>
       </td>
       <td className={`p-4 `}>

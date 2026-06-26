@@ -1,6 +1,8 @@
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { useEffect, useState } from "react";
+import { getLogoUrl } from "../lib/logo.js";
 import { motion } from "motion/react";
+import CompanyLogo from "./CompanyLogo.js";
 import {
   MapPin,
   DollarSign,
@@ -71,6 +73,7 @@ export default function InternshipWindow({
   const closeWindow = () => {
     setInternshipWindow({ active: false, internship: null });
   };
+
   const {
     company,
     role,
@@ -204,6 +207,7 @@ export default function InternshipWindow({
         <div className="shrink-0">
           <div className="flex justify-between items-center mb-2">
             <div className="flex flex-row gap-4 items-center">
+              <CompanyLogo companyName={company} size={32} />
               <h2 className="text-2xl font-bold text-black">{company}</h2>
               <p className={`px-3 py-1 rounded-full border ${statusStyle}`}>
                 {statusName}

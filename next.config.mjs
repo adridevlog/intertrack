@@ -10,6 +10,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "img.logo.dev", // <-- Add this new block
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
