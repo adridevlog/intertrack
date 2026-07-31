@@ -19,6 +19,11 @@ export function InternshipProvider({ children }) {
 
   const [user, setUser] = useState(null);
 
+  const [personalContext, setPersonalContext] = useState({
+    active: false,
+    text: "",
+  });
+
   return (
     <InternshipContext.Provider
       value={{
@@ -32,6 +37,8 @@ export function InternshipProvider({ children }) {
         setLoading,
         user,
         setUser,
+        personalContext,
+        setPersonalContext,
       }}
     >
       {children}
@@ -53,5 +60,9 @@ export function useUser() {
 }
 
 export function useInternshipWindow() {
+  return useContext(InternshipContext);
+}
+
+export function usePersonalContext() {
   return useContext(InternshipContext);
 }

@@ -68,3 +68,8 @@ export const updatePreferenceInCloud = async (key, value, user) => {
   // By using [key]: value, this function can update ANY setting dynamically
   await setDoc(settingsDocRef, { [key]: value }, { merge: true });
 };
+
+export const updatePersonalContext = async (updatedFields, user) => {
+  const docRef = doc(db, "users", user.uid, "config", "personalContext");
+  await setDoc(docRef, updatedFields);
+};

@@ -8,7 +8,10 @@ import { List, LayoutGrid } from "lucide-react";
 import StatusColumn from "./components/StatusColumn";
 import InternshipList from "./components/InternshipList";
 import InternshipWindow from "./components/InternshipWindow";
-import { useInternship } from "./context/InternshipContext.js";
+import {
+  useInternship,
+  usePersonalContext,
+} from "./context/InternshipContext.js";
 import { calculateScore } from "./tools/functions";
 import {
   collection,
@@ -26,11 +29,13 @@ import {
 import { useAuthenticationChanges } from "./hooks/useAuthenticationChanges.js";
 import { useListenToData } from "./hooks/useListenToData.js";
 import { useLoading, useUser } from "./context/InternshipContext.js";
+import { PersonalContextWindow } from "./components/PersonalContextWindow.js";
 
 export default function Home() {
   const { user, setUser } = useUser();
   const { loading, setLoading } = useLoading();
   const [activeLayout, setActiveLayout] = useState("board");
+  const { personalContext, setPersonalContext } = usePersonalContext();
   const {
     internshipWindow,
     setInternshipWindow,
@@ -164,6 +169,12 @@ export default function Home() {
           evaluationWeights={evaluationWeights}
           internships={sortedInternships}
         ></InternshipWindow>
+      )}
+      {personalContext.active && (
+        <PersonalContextWindow
+          text={personalContext.text}
+          setText={setPersonalContext}
+        />
       )}
       <div
         className={`w-full max-w-7xl flex flex-col gap-8 transition-all duration-300 ${

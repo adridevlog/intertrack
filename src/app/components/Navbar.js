@@ -1,8 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Search, Plus, LogOut } from "lucide-react";
-import { useInternship, useUser } from "../context/InternshipContext.js";
+import { Search, Plus, LogOut, UserRoundPen } from "lucide-react";
+import {
+  useInternship,
+  useUser,
+  usePersonalContext,
+} from "../context/InternshipContext.js";
 import { useState } from "react";
 import { newInternship } from "../data/newInternship.js";
 import { addInternship } from "../tools/functions.js";
@@ -18,6 +22,7 @@ export default function Navbar() {
     searchQuery,
     setSearchQuery,
   } = useInternship();
+  const { personalContext, setPersonalContext } = usePersonalContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const { user } = useUser();
   const handleAddInternship = async () => {
@@ -103,11 +108,22 @@ export default function Navbar() {
                     <p className="text-sm font-bold text-slate-800 truncate">
                       {user.displayName}
                     </p>
+
                     <p className="text-xs font-medium text-slate-500 truncate">
                       {user.email}
                     </p>
                   </div>
-
+                  <div className="p-1">
+                    <button
+                      onClick={() =>
+                        setPersonalContext({ ...personalContext, active: true })
+                      }
+                      className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <UserRoundPen className="w-4 h-4" />
+                      Personal context
+                    </button>
+                  </div>
                   <div className="p-1">
                     <button
                       onClick={handleLogout}

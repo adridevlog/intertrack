@@ -1,0 +1,64 @@
+import { updatePersonalContext } from "../tools/functions.js";
+import { usePersonalContext } from "../context/InternshipContext.js";
+import { useState } from "react";
+import { useUser } from "../context/InternshipContext.js";
+
+export const PersonalContextWindow = () => {
+  const { personalContext, setPersonalContext } = usePersonalContext();
+  const [formText, setFormText] = useState(personalContext.text || "");
+  const { user } = useUser();
+
+  const closeWindow = () => {
+    setPersonalContext({ ...personalContext, active: false });
+  };
+  const handleSaveChanges = () => {
+    updatePersonalContext({ text: formText }, user);
+    setPersonalContext({ text: formText, active: false });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-120 px-backdrop-blur-xs"
+      onClick={closeWindow} // Optional: closes when clicking outside
+    >
+      <div
+        className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto py-4 px-6 relative flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex flex-row gap-4 items-center">
+            Personal Context
+          </div>
+
+          <button
+            onClick={() =>
+              setPersonalContext({ ...personalContext, active: false })
+            }
+            className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 
+                  w-12 h-12 rounded-full font-bold text-xl cursor-pointer transition-all duration-100"
+          >
+            ✕
+          </button>
+        </div>
+        <div>
+          Set your personal context here. This context will be used to tailor
+          the internship recommendations and evaluations to your specific needs
+          and preferences. It will not be used for any other purpose and will
+          remain private to you.
+        </div>
+        <textarea
+          value={formText}
+          onChange={(e) => setFormText(e.target.value)}
+          className="w-full h-64 p-4 mt-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          placeholder="Enter your personal context here..."
+        />
+        <button
+          className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide"
+          onClick={handleSaveChanges}
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
+};
