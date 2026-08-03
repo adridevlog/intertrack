@@ -23,5 +23,6 @@ export const newInternship = {
     supervisor: 1,
     prestige: 1,
   },
+  marked: false,
   acceptedDate: null,
 };

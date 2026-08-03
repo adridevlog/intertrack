@@ -5,10 +5,13 @@ import {
   Star,
   DollarSign,
   Clock,
+  Bookmark,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { calculateScore } from "../tools/functions";
 import CompanyLogo from "./CompanyLogo.js";
+import { useUser } from "../context/InternshipContext.js";
+import { updateInternship } from "../tools/functions.js";
 
 export default function InternshipBoard({
   internship,
@@ -26,6 +29,7 @@ export default function InternshipBoard({
     salary,
     duration,
   } = internship;
+  const { user } = useUser();
   const averageScore = calculateScore(evaluation, evaluationWeights);
   const progress = (
     (Object.values(internship.requirements).filter((r) => r.done).length /
@@ -56,7 +60,7 @@ export default function InternshipBoard({
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      className="flex flex-col p-6 border border-slate-200 bg-white rounded-xl gap-1 cursor-pointer hover:shadow-2xl  transition-all duration-300 hover:-translate-y-2 hover:bg-cyan-50 group"
+      className={`flex flex-col py-8 px-6 border  ${internship.marked ? "bg-amber-200 border-amber-200" : "bg-white border-slate-200"} rounded-xl gap-1 cursor-pointer hover:shadow-2xl  transition-all duration-300 hover:-translate-y-2 hover:bg-cyan-50 hover:border-cyan-200 hover:border-2 group relative`}
       onClick={() => {
         setInternshipWindow({
           active: true,
@@ -117,6 +121,26 @@ export default function InternshipBoard({
           </span>
         </div>
       )}
+      <div className="absolute -top-[3px] left-3">
+        {!internship.marked && (
+          <Bookmark
+            className=" w-7 h-7 text-gray-500 "
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent the click from propagating to the parent div
+              updateInternship(internship.id, { marked: true }, user);
+            }}
+          />
+        )}
+        {internship.marked && (
+          <Bookmark
+            className=" w-7 h-7 text-amber-600 fill-amber-400 "
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent the click from propagating to the parent div
+              updateInternship(internship.id, { marked: false }, user);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

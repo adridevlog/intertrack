@@ -115,34 +115,45 @@ export default function Home() {
   });
 
   let sortedInternships = [...filteredInternships];
-  if (sort === "status") {
-    sortedInternships.sort((a, b) => {
+  sortedInternships.sort((a, b) => {
+    // 1. PINNED LOGIC: Always bubble marked internships to the top
+    if (a.marked && !b.marked) return -1;
+    if (!a.marked && b.marked) return 1;
+
+    // 2. SECONDARY SORT: If they are both marked (or both unmarked), apply the user's chosen sort
+    if (sort === "status") {
       return (
         statusList.findIndex((s) => s.status === b.status) -
         statusList.findIndex((s) => s.status === a.status)
       );
-    });
-  } else if (sort === "evaluation") {
-    sortedInternships.sort((a, b) => {
+    }
+
+    if (sort === "evaluation") {
       const scoreA = calculateScore(a.evaluation, evaluationWeights);
       const scoreB = calculateScore(b.evaluation, evaluationWeights);
-      return scoreB - scoreA; // Sort descending
-    });
-  } else if (sort === "deadline") {
-    sortedInternships.sort(
-      (a, b) => new Date(a.deadline) - new Date(b.deadline),
-    );
-  } else if (sort === "progress") {
-    sortedInternships.sort((a, b) => {
+      return scoreB - scoreA;
+    }
+
+    if (sort === "deadline") {
+      // Handle cases where a deadline might be empty to avoid crashing the sort
+      if (!a.deadline) return 1;
+      if (!b.deadline) return -1;
+      return new Date(a.deadline) - new Date(b.deadline);
+    }
+
+    if (sort === "progress") {
+      // Added a fallback to `|| 1` to prevent dividing by zero if requirements array is empty
       const progressA =
         Object.values(a.requirements).filter((r) => r.done).length /
-        a.requirements.length;
+        (a.requirements.length || 1);
       const progressB =
         Object.values(b.requirements).filter((r) => r.done).length /
-        b.requirements.length;
-      return progressB - progressA; // Sort descending
-    });
-  }
+        (b.requirements.length || 1);
+      return progressB - progressA;
+    }
+
+    return 0; // Default fallback
+  });
 
   if (loading) return <div>Loading your cloud workspace...</div>;
   if (!user) {

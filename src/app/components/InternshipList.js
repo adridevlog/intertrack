@@ -1,7 +1,9 @@
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
-import { Star } from "lucide-react";
+import { Star, Bookmark } from "lucide-react";
 import { calculateScore } from "../tools/functions";
 import CompanyLogo from "./CompanyLogo";
+import { updateInternship } from "../tools/functions";
+import { useUser } from "../context/InternshipContext";
 
 export default function InternshipList({
   internship,
@@ -9,6 +11,7 @@ export default function InternshipList({
   setInternshipWindow,
   evaluationWeights,
 }) {
+  const { user } = useUser();
   let statusName;
   let statusStyle;
   const averageScore = calculateScore(internship.evaluation, evaluationWeights);
@@ -35,7 +38,7 @@ export default function InternshipList({
   return (
     <tr
       key={internship.id}
-      className=" cursor-pointer group hover:shadow-xl  transition-all duration-300 hover:-translate-x-2 hover:bg-blue-50 group"
+      className={`border ${internship.marked ? "bg-amber-100 border-amber-200" : "bg-white border-slate-200"} cursor-pointer group hover:shadow-xl  transition-all duration-300 hover:-translate-x-2 hover:bg-blue-50 group relative`}
       onClick={() => {
         setInternshipWindow({
           active: true,
@@ -43,7 +46,27 @@ export default function InternshipList({
         });
       }}
     >
-      <td className="p-4 flex items-center gap-4">
+      <td className="px-4 py-6 flex items-center gap-4">
+        <div className="absolute -top-[3px] left-3">
+          {!internship.marked && (
+            <Bookmark
+              className=" w-6 h-6 text-gray-500 "
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the click from propagating to the parent div
+                updateInternship(internship.id, { marked: true }, user);
+              }}
+            />
+          )}
+          {internship.marked && (
+            <Bookmark
+              className=" w-6 h-6 text-amber-600 fill-amber-400 "
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the click from propagating to the parent div
+                updateInternship(internship.id, { marked: false }, user);
+              }}
+            />
+          )}
+        </div>
         <CompanyLogo companyName={internship.company} />
         <div>
           <div className="text-base font-semibold text-slate-900 sm:text-lg md:text-xl tracking-wide group-hover:text-blue-800">

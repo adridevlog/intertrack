@@ -34,6 +34,7 @@ export const INITIAL_DATA = [
       supervisor: 10,
       prestige: 9,
     },
+    marked: true,
     acceptedDate: null,
   },
   {
@@ -61,6 +62,7 @@ export const INITIAL_DATA = [
       supervisor: 8,
       prestige: 7,
     },
+    marked: false,
     acceptedDate: null,
   },
   {
@@ -93,6 +95,7 @@ export const INITIAL_DATA = [
       supervisor: 7,
       prestige: 7,
     },
+    marked: false,
     acceptedDate: null,
   },
 ];

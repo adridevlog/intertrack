@@ -10,6 +10,7 @@ import {
   Briefcase,
   Clock3,
   Star,
+  Bookmark,
 } from "lucide-react";
 import {
   getDaysUntil,
@@ -224,9 +225,35 @@ export default function InternshipWindow({
       onClick={closeWindow} // Optional: closes when clicking outside
     >
       <div
-        className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto py-4 px-6 relative flex flex-col overflow-hidden"
+        className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto py-6 px-6 relative flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="absolute -top-[3px] left-3">
+          {!formData.marked && (
+            <Bookmark
+              className=" w-7 h-7 text-gray-500 "
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the click from propagating to the parent div
+                setFormData((prevData) => ({
+                  ...prevData,
+                  marked: true,
+                }));
+              }}
+            />
+          )}
+          {formData.marked && (
+            <Bookmark
+              className=" w-7 h-7 text-amber-600 fill-amber-400 "
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the click from propagating to the parent div
+                setFormData((prevData) => ({
+                  ...prevData,
+                  marked: false,
+                }));
+              }}
+            />
+          )}
+        </div>
         <div className="shrink-0">
           <div className="flex justify-between items-center mb-2">
             <div className="flex flex-row gap-4 items-center">
