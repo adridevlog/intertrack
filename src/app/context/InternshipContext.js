@@ -24,6 +24,8 @@ export function InternshipProvider({ children }) {
     text: "",
   });
 
+  const [AIFit, setAIFit] = useState("");
+
   return (
     <InternshipContext.Provider
       value={{
@@ -39,6 +41,8 @@ export function InternshipProvider({ children }) {
         setUser,
         personalContext,
         setPersonalContext,
+        AIFit,
+        setAIFit,
       }}
     >
       {children}
@@ -64,5 +68,9 @@ export function useInternshipWindow() {
 }
 
 export function usePersonalContext() {
+  return useContext(InternshipContext);
+}
+
+export function useAIFit() {
   return useContext(InternshipContext);
 }
