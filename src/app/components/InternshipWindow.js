@@ -228,7 +228,7 @@ export default function InternshipWindow({
         className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto py-6 px-6 relative flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute -top-[3px] left-3">
+        <div className="absolute -top-0.75 left-3">
           {!formData.marked && (
             <Bookmark
               className=" w-7 h-7 text-gray-500 "
@@ -277,14 +277,14 @@ export default function InternshipWindow({
           <div className="text-gray-600">
             <p className="text-md font-semibold mb-2">{role}</p>
           </div>
-          <div className="mt-4 flex flex-row gap-5 border-b border-gray-300 pb-2">
+          <div className="mt-4 flex flex-row gap-5 border-b border-gray-300 pb-2 overflow-hidden overflow-x-auto flex-nowrap">
             {internshipWindowViews.map((view) => {
               const isActiveStyle =
                 activeView === view
                   ? "text-indigo-700"
                   : "text-gray-500 hover:text-gray-900";
               return (
-                <div key={view} className="relative ">
+                <div key={view} className="relative text-nowrap">
                   <div
                     className={`text-md font-medium cursor-pointer ${isActiveStyle} transition-all duration-100`}
                     onClick={() => setActiveView(view)}
@@ -553,8 +553,8 @@ export default function InternshipWindow({
                 </div>
               </div>
               <div className="mt-6">
-                <span className="text-black">Action Items</span>
-                <div className="flex flex-col ">
+                <span className="text-black text-lg">Action Items</span>
+                <div className="flex flex-col mt-4">
                   {formData.requirements.map((requirement, index) => {
                     const style = formData.requirements[index]?.done
                       ? "line-through text-gray-500"
@@ -596,46 +596,37 @@ export default function InternshipWindow({
                     );
                   })}
                 </div>
-                <div
-                  className="text-gray-700 mt-8 cursor-pointer hover:text-indigo-700 font-medium transition-all"
-                  onClick={() => {
-                    setEditRequirement(true);
-                  }}
-                >
-                  <span className="text-lg">+</span> Add requirement
+
+                <div className="flex gap-3 items-baseline mt-4">
+                  <input
+                    className="text-base text-gray-700 rounded-xl bg-gray-200 border-2 border-gray-300 w-80 px-2 py-0.5 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="Enter requirement and press enter"
+                    value={requirementInput}
+                    onChange={handleRequirementInputChange}
+                    onKeyDown={handleKeyDown}
+                  ></input>
+                  <button
+                    className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 h-8 py-0 rounded-lg cursor-pointer font-medium tracking-wide"
+                    onClick={() => {
+                      const newRequirements = [
+                        ...formData.requirements,
+                        {
+                          id: `r${formData.requirements.length}`,
+                          text: requirementInput,
+                          done: false,
+                        },
+                      ];
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        requirements: newRequirements,
+                      }));
+                      setRequirementInput("");
+                      setEditRequirement(false);
+                    }}
+                  >
+                    Add
+                  </button>
                 </div>
-                {editRequirement && (
-                  <div className="flex gap-3 items-baseline mt-4">
-                    <input
-                      className="text-base text-gray-700 rounded-xl bg-gray-200 border-2 border-gray-300 w-80 px-2 py-0.5 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                      placeholder="Enter requirement and press enter"
-                      value={requirementInput}
-                      onChange={handleRequirementInputChange}
-                      onKeyDown={handleKeyDown}
-                    ></input>
-                    <button
-                      className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 h-8 py-0 rounded-lg cursor-pointer font-medium tracking-wide"
-                      onClick={() => {
-                        const newRequirements = [
-                          ...formData.requirements,
-                          {
-                            id: `r${formData.requirements.length}`,
-                            text: requirementInput,
-                            done: false,
-                          },
-                        ];
-                        setFormData((prevData) => ({
-                          ...prevData,
-                          requirements: newRequirements,
-                        }));
-                        setRequirementInput("");
-                        setEditRequirement(false);
-                      }}
-                    >
-                      Add
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           )}
@@ -692,7 +683,7 @@ export default function InternshipWindow({
           )}
           {activeView === "Evaluation" && (
             <div className="flex flex-col w-full gap-8">
-              <div className="bg-amber-100 p-6 border border-amber-200 flex justify-between rounded-lg">
+              <div className="bg-amber-100 p-6 border border-amber-200 flex flex-col sm:flex-row justify-between rounded-lg gap-4">
                 <div className="flex flex-col gap-2">
                   <p className="font-bold text-md text-amber-800">
                     Overall Assessment Score

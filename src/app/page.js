@@ -158,19 +158,46 @@ export default function Home() {
   if (loading) return <div>Loading your cloud workspace...</div>;
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Welcome to InternTrack</h1>
-        <button
-          onClick={handleLogin}
-          className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold"
-        >
-          Sign in with Google
-        </button>
+      <div className="  min-h-screen bg-slate-50  fixed inset-0  flex items-center justify-center z-120 px-backdrop-blur-xs">
+        <div className="flex p-10 flex-col items-center justify-center gap-2 bg-white rounded-xl shadow-lg">
+          <p className="text-3xl font-black text-slate-900 font-sans">
+            InternTrack
+          </p>
+          <p className="text-base text-slate-500 font-medium">
+            The intelligent internship tracking solution for students.
+          </p>
+          <button
+            onClick={handleLogin}
+            className="mt-6 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              class="lucide lucide-log-in w-5 h-5"
+              aria-hidden="true"
+            >
+              <path d="m10 17 5-5-5-5"></path>
+              <path d="M15 12H3"></path>
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            </svg>
+            Sign in with Google
+          </button>
+          <p className="mt-6 text-xs text-slate-400 flex items-center justify-center gap-1">
+            Securely synced with Firebase.
+          </p>
+        </div>
       </div>
     );
   }
   return (
-    <main className="mt-22 pt-14 font-sans flex min-h-screen h-full flex-col items-center justify-between p-8 bg-slate-50 ">
+    <main className=" pt-52 sm:pt-36 font-sans flex min-h-screen h-full flex-col items-center justify-between p-8 bg-slate-50 ">
       {internshipWindow?.active && (
         <InternshipWindow
           internship={internshipWindow?.internship}
@@ -194,7 +221,7 @@ export default function Home() {
             : ""
         }`}
       >
-        <div className="w-full flex flex-row justify-between items-center">
+        <div className="w-full flex flex-col sm:flex-row justify-between gap-10 items-start sm:items-center">
           <div className="flex flex-row text-black border border-gray-300 rounded-xl p-3 gap-2 bg-white">
             <LayoutSelector
               name="Board"

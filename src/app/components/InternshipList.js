@@ -47,7 +47,7 @@ export default function InternshipList({
       }}
     >
       <td className="px-4 py-6 flex items-center gap-4">
-        <div className="absolute -top-[3px] left-3">
+        <div className="absolute -top-0.75 left-3">
           {!internship.marked && (
             <Bookmark
               className=" w-6 h-6 text-gray-500 "

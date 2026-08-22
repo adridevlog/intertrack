@@ -121,7 +121,7 @@ export default function InternshipBoard({
           </span>
         </div>
       )}
-      <div className="absolute -top-[3px] left-3">
+      <div className="absolute -top-0.75 left-3">
         {!internship.marked && (
           <Bookmark
             className=" w-7 h-7 text-gray-500 "
