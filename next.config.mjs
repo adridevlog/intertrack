@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  output: "export", // 1. Tells Next.js to generate the static 'out' folder
+  basePath: "/interntrack", // 2. Fixes your asset paths so they don't 404 in the subfolder
   reactCompiler: true,
   images: {
+    unoptimized: true, // 3. Disables server-side image optimization (required for static exports)
     remotePatterns: [
       {
         protocol: "https",
@@ -12,7 +14,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "img.logo.dev", // <-- Add this new block
+        hostname: "img.logo.dev",
         port: "",
         pathname: "/**",
       },
