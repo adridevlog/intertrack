@@ -59,9 +59,10 @@ export default function Navbar() {
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 " />
           <input
             placeholder="Search roles, companies"
-            className="w-62 sm:w-48 md:flex md:flex-1 max-w-100 pl-10 rounded-4xl bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
+            className="w-44 sm:w-48 md:flex md:flex-1 max-w-100 pl-10 rounded-4xl bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            suppressHydrationWarning
           ></input>
         </div>
       </div>
