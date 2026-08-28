@@ -26,7 +26,7 @@ export const PersonalContextWindow = () => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-2">
-          <div className="flex flex-row gap-4 items-center">
+          <div className="text-lg sm:text-xl font-bold text-gray-800">
             Personal Context
           </div>
 
@@ -40,20 +40,20 @@ export const PersonalContextWindow = () => {
             ✕
           </button>
         </div>
-        <div>
+        <div className="text-gray-600 text-sm sm:text-base mb-4">
           Set your personal context here. This context will be used to tailor
-          the internship recommendations and evaluations to your specific needs
-          and preferences. It will not be used for any other purpose and will
-          remain private to you.
+          the internship AI-powered recommendations and evaluations to your
+          specific needs and preferences. It will not be used for any other
+          purpose and will remain private to you.
         </div>
         <textarea
           value={formText}
           onChange={(e) => setFormText(e.target.value)}
-          className="w-full h-64 p-4 mt-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full h-64 p-4 mt-4 border border-gray-300 rounded-lg  resize-none bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
           placeholder="Enter your personal context here..."
         />
         <button
-          className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide"
+          className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide mt-6"
           onClick={handleSaveChanges}
         >
           Save Changes

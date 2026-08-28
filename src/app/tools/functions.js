@@ -73,8 +73,3 @@ export const updatePersonalContext = async (updatedFields, user) => {
   const docRef = doc(db, "users", user.uid, "config", "personalContext");
   await setDoc(docRef, updatedFields);
 };
-
-export const updateAIFit = async (updatedFields, user) => {
-  const docRef = doc(db, "users", user.uid, "config", "AIFit");
-  await setDoc(docRef, updatedFields);
-};

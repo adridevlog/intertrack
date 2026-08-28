@@ -180,7 +180,7 @@ export default function Home() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              class="lucide lucide-log-in w-5 h-5"
+              className="lucide lucide-log-in w-5 h-5"
               aria-hidden="true"
             >
               <path d="m10 17 5-5-5-5"></path>

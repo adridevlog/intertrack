@@ -15,13 +15,11 @@ import {
   getDaysUntil,
   calculateScore,
   calculateEvaluationKeyValue,
-  updateAIFit,
 } from "../tools/functions";
 import {
   useInternship,
   useUser,
   usePersonalContext,
-  useAIFit,
 } from "../context/InternshipContext.js";
 import {
   addInternship,
@@ -65,8 +63,8 @@ export default function InternshipWindow({
     interview: internship?.interview || { date: "", tips: "", notes: "" },
     evaluation: internship?.evaluation || { salary: 10 },
     marked: internship?.marked || false,
+    AIFit: internship?.AIFit || "",
   });
-  const { AIFit, setAIFit } = useAIFit();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { setInternships, internships } = useInternship();
   const { user } = useUser();
@@ -112,7 +110,9 @@ export default function InternshipWindow({
   });
 
   async function getAIFit(internship, personalContext) {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const ai = new GoogleGenAI({
+      apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+    });
     const { company, role, description } = internship;
     if (!company || !role || !personalContext) {
       throw new Error(
@@ -158,9 +158,16 @@ export default function InternshipWindow({
 
   async function handleAIFit() {
     setIsAnalyzing(true);
+    setFormData((prevData) => ({
+      ...prevData,
+      AIFit: "", // Clear previous AI Fit data
+    }));
     try {
       const response = await getAIFit(internship, personalContext.text);
-      updateAIFit(response, user);
+      setFormData((prevData) => ({
+        ...prevData,
+        AIFit: response,
+      }));
       console.log("AI Fit Response:", response);
     } catch (error) {
       console.error(error);
@@ -318,7 +325,6 @@ export default function InternshipWindow({
             </button>
           </div>
 
-          {/* Your content goes here */}
           <div className="text-gray-600">
             <p className="text-md font-semibold mb-2">{role}</p>
           </div>
@@ -354,7 +360,7 @@ export default function InternshipWindow({
         </div>
         <div className="flex grow overflow-y-auto px-2 py-6">
           {activeView === "Overview" && (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 pb-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <OverviewBaseInput
                   name="company"
@@ -394,7 +400,7 @@ export default function InternshipWindow({
                 handleChange={handleChange}
               />
 
-              <div className="flex flex-row flex-wrap gap-2 row-gap-2">
+              <div className="flex flex-row flex-wrap gap-2 row-gap-2 pb-6">
                 <OverviewBottomInput
                   name="location"
                   label="Location"
@@ -418,7 +424,7 @@ export default function InternshipWindow({
           )}
           {activeView == "AI Fit" && (
             <div className="flex flex-col w-full">
-              {AIFit === "" && (
+              {formData.AIFit === "" && (
                 <div className="w-full h-full flex flex-col gap-6 bg-indigo-50/50 p-6 border border-slate-200 rounded-lg items-center justify-center">
                   <div className="text-lg text-indigo-900 font-bold tracking-wide">
                     Internship Fit Analysis
@@ -443,7 +449,7 @@ export default function InternshipWindow({
                   )}
                 </div>
               )}
-              {AIFit !== "" && !isAnalyzing && (
+              {formData.AIFit !== "" && !isAnalyzing && (
                 <div className="animate-in fade-in duration-500">
                   <div className="flex flex-col sm:flex-row gap-6 mb-6">
                     <div className="flex-1 bg-linear-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white shrink-0 sm:w-64 flex flex-col justify-center items-center relative overflow-hidden shadow-lg shadow-indigo-200">
@@ -468,7 +474,7 @@ export default function InternshipWindow({
                         Objective Fit Score
                       </div>
                       <div className="text-6xl font-black relative z-10">
-                        {AIFit.score}
+                        {formData.AIFit.score}
                         <span className="text-3xl text-indigo-300">%</span>
                       </div>
                     </div>
@@ -500,7 +506,7 @@ export default function InternshipWindow({
                         AI Assessment
                       </h4>
                       <p className="text-sm text-slate-700 font-medium leading-relaxed">
-                        {AIFit.overview}
+                        {formData.AIFit.overview}
                       </p>
                     </div>
                   </div>
@@ -510,7 +516,7 @@ export default function InternshipWindow({
                         Matching Skills
                       </h4>
                       <ul className="space-y-2">
-                        {AIFit.matchingSkills.map((skill, index) => (
+                        {formData.AIFit.matchingSkills.map((skill, index) => (
                           <li
                             key={index}
                             className="flex items-start gap-2 text-sm font-medium text-emerald-900"
@@ -541,34 +547,39 @@ export default function InternshipWindow({
                         Missing / To Learn
                       </h4>
                       <ul className="space-y-2">
-                        {AIFit.missingRequirements.map((requirement, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start gap-2 text-sm font-medium text-red-900"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-circle-x w-4 h-4 text-red-500 shrink-0 mt-0.5"
-                              aria-hidden="true"
+                        {formData.AIFit.missingRequirements.map(
+                          (requirement, index) => (
+                            <li
+                              key={index}
+                              className="flex items-start gap-2 text-sm font-medium text-red-900"
                             >
-                              <path d="M21 12A9 9 0 1 1 12 3a9 9 0 0 1 9 9Z"></path>
-                              <path d="m15 9-6 6M9 9l6 6"></path>
-                            </svg>
-                            {requirement}
-                          </li>
-                        ))}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-circle-x w-4 h-4 text-red-500 shrink-0 mt-0.5"
+                                aria-hidden="true"
+                              >
+                                <path d="M21 12A9 9 0 1 1 12 3a9 9 0 0 1 9 9Z"></path>
+                                <path d="m15 9-6 6M9 9l6 6"></path>
+                              </svg>
+                              {requirement}
+                            </li>
+                          ),
+                        )}
                       </ul>
                     </div>
                   </div>
-                  <button className="my-6  hover:text-gray-800  hover:bg-gray-50 text-gray-600 font-bold py-2 px-6 rounded-lg shadow-sm flex items-center justify-center gap-1 mx-auto transition-colors disabled:opacity-50 cursor-pointer">
+                  <button
+                    onClick={handleAIFit}
+                    className="my-6  hover:text-gray-800  hover:bg-gray-50 text-gray-600 font-bold py-2 px-6 rounded-lg shadow-sm flex items-center justify-center gap-1 mx-auto transition-colors disabled:opacity-50 cursor-pointer"
+                  >
                     <span>🔄</span> Recalculate
                   </button>
                 </div>
@@ -642,7 +653,10 @@ export default function InternshipWindow({
                   })}
                 </div>
 
-                <div className="flex gap-3 items-baseline mt-4">
+                <div
+                  className="flex gap-3 items-baseline mt-4 pb-6
+                "
+                >
                   <input
                     className="text-base text-gray-700 rounded-xl bg-gray-200 border-2 border-gray-300 w-80 px-2 py-0.5 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="Enter requirement and press enter"
@@ -705,7 +719,7 @@ export default function InternshipWindow({
               <div className="text-black font-semibold text-lg mt-7">
                 Preparation Strategy
               </div>
-              <div className="mt-4 flex flex-col items-baseline w-full gap-4">
+              <div className="mt-4 flex flex-col items-baseline w-full gap-4 pb-6">
                 <OverviewBaseInput
                   type="text"
                   name="tips"
@@ -748,7 +762,7 @@ export default function InternshipWindow({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-4 w-full pb-6">
                 {Object.entries(formData.evaluation).map(([key, value]) => {
                   const width = `w-[${evaluationKeysWidth}px]`;
                   return (

@@ -6,7 +6,6 @@ import {
   useLoading,
   useUser,
   usePersonalContext,
-  useAIFit,
 } from "../context/InternshipContext.js";
 
 export const useListenToData = ({ setActiveLayout, setSort }) => {
@@ -14,7 +13,6 @@ export const useListenToData = ({ setActiveLayout, setSort }) => {
   const { loading, setLoading } = useLoading();
   const { internships, setInternships } = useInternship();
   const { personalContext, setPersonalContext } = usePersonalContext();
-  const { AIFit, setAIFit } = useAIFit();
 
   useEffect(() => {
     if (!user) return;
@@ -29,8 +27,6 @@ export const useListenToData = ({ setActiveLayout, setSort }) => {
       "config",
       "personalContext",
     );
-
-    const AIFitDocRef = doc(db, "users", user.uid, "config", "AIFit");
 
     // Fetch user preferences (like sorting)
     const unsubSettings = onSnapshot(settingsDocRef, (docSnap) => {
@@ -67,18 +63,10 @@ export const useListenToData = ({ setActiveLayout, setSort }) => {
       },
     );
 
-    const unsubAIFit = onSnapshot(AIFitDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setAIFit(data);
-      }
-    });
-
     return () => {
       unsubSettings();
       unsubInternships();
       unsubPersonalContext();
-      unsubAIFit();
     };
   }, [
     user,
@@ -87,6 +75,5 @@ export const useListenToData = ({ setActiveLayout, setSort }) => {
     setPersonalContext,
     setActiveLayout,
     setSort,
-    setAIFit,
   ]);
 };
