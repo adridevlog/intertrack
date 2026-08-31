@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { Search, Plus, LogOut, UserRoundPen } from "lucide-react";
+import { Search, Plus, LogOut, UserRoundPen, Globe } from "lucide-react";
 import {
   useInternship,
   useUser,
@@ -14,6 +15,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase.js";
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation();
+
   const {
     internshipWindow,
     setInternshipWindow,
@@ -54,11 +57,13 @@ export default function Navbar() {
   return (
     <nav className="z-100 fixed w-full flex items-center flex-row justify-between p-6  bg-white border-b-2 border-slate-200 font-sans gap-2 sm:gap-4 md:gap-10">
       <div className="flex flex-1 flex-col items-start gap-7 sm:flex-row sm:gap-3 md:gap-10 sm:items-center">
-        <div className="text-slate-800 text-2xl font-bold">InternTrack</div>
+        <div className="text-slate-800 text-2xl font-bold">
+          {t("navbar.title")}
+        </div>
         <div className="relative w-min sm:flex sm:flex-1 ">
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 " />
           <input
-            placeholder="Search roles, companies"
+            placeholder={t("navbar.searchPlaceholder")}
             className="w-44 sm:w-48 md:flex md:flex-1 max-w-100 pl-10 rounded-4xl bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -73,7 +78,7 @@ export default function Navbar() {
           onClick={handleAddInternship}
         >
           <Plus className="w-6 h-6 self-center"></Plus>
-          <span className="self-center">Add New</span>
+          <span className="self-center">{t("navbar.addNew")}</span>
         </button>
         {user && (
           <div className="relative ml-2 order-1 sm:order-2">
@@ -125,7 +130,7 @@ export default function Navbar() {
                       className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                     >
                       <UserRoundPen className="w-4 h-4" />
-                      Personal context
+                      {t("navbar.profile.personalContext.title")}
                     </button>
                   </div>
                   <div className="p-1">
@@ -133,7 +138,8 @@ export default function Navbar() {
                       onClick={handleLogout}
                       className="w-full text-left px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                     >
-                      <LogOut className="w-4 h-4" /> Log Out
+                      <LogOut className="w-4 h-4" />{" "}
+                      {t("navbar.profile.logOut")}
                     </button>
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   MapPin,
   Calendar,
@@ -18,6 +19,7 @@ export default function InternshipBoard({
   setInternshipWindow,
   evaluationWeights,
 }) {
+  const { t } = useTranslation();
   let {
     role,
     evaluation,
@@ -36,10 +38,13 @@ export default function InternshipBoard({
       internship.requirements.length) *
     100
   ).toFixed(0);
-  const deadlineDate = new Date(deadline).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  const deadlineDate = new Date(deadline).toLocaleDateString(
+    t("list.language"),
+    {
+      month: "short",
+      day: "numeric",
+    },
+  );
 
   const handleDragStart = (e) => {
     // Save the ID of the internship being dragged into the browser's memory

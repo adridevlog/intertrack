@@ -8,6 +8,7 @@ export default function LayoutSelector({
   Icon,
   activeLayout,
   setActiveLayout,
+  string,
 }) {
   const { user } = useInternship();
   const bg =
@@ -39,7 +40,7 @@ export default function LayoutSelector({
         className={`z-10 flex flex-row gap-2 py-3 px-3 rounded-xl hover:bg-gray-100 cursor-pointer ${bg}`}
       >
         <Icon className="w-6 h-6" />
-        <span className="text-lg font-semibold">{name}</span>
+        <span className="text-lg font-semibold">{string}</span>
       </div>
     </motion.div>
   );

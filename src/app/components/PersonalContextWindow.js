@@ -2,8 +2,10 @@ import { updatePersonalContext } from "../tools/functions.js";
 import { usePersonalContext } from "../context/InternshipContext.js";
 import { useState } from "react";
 import { useUser } from "../context/InternshipContext.js";
+import { useTranslation } from "react-i18next";
 
 export const PersonalContextWindow = () => {
+  const { t } = useTranslation();
   const { personalContext, setPersonalContext } = usePersonalContext();
   const [formText, setFormText] = useState(personalContext.text || "");
   const { user } = useUser();
@@ -27,7 +29,7 @@ export const PersonalContextWindow = () => {
       >
         <div className="flex justify-between items-center mb-2">
           <div className="text-lg sm:text-xl font-bold text-gray-800">
-            Personal Context
+            {t("navbar.profile.personalContext.title")}
           </div>
 
           <button
@@ -41,10 +43,7 @@ export const PersonalContextWindow = () => {
           </button>
         </div>
         <div className="text-gray-600 text-sm sm:text-base mb-4">
-          Set your personal context here. This context will be used to tailor
-          the internship AI-powered recommendations and evaluations to your
-          specific needs and preferences. It will not be used for any other
-          purpose and will remain private to you.
+          {t("navbar.profile.personalContext.description")}
         </div>
         <textarea
           value={formText}
@@ -56,7 +55,7 @@ export const PersonalContextWindow = () => {
           className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide mt-6"
           onClick={handleSaveChanges}
         >
-          Save Changes
+          {t("navbar.profile.personalContext.saveButton")}
         </button>
       </div>
     </div>

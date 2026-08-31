@@ -1,4 +1,9 @@
 {
+  "login": {
+    "description": "The intelligent internship tracking solution for students.",
+    "button": "Sign in with Google",
+    "footer": "Securely synced with Firebase."
+  },
   "navbar": {
     "title": "InternTrack",
     "searchPlaceholder": "Search roles, companies",
@@ -14,38 +19,36 @@
   },
   "sorting": {
     "title": "Sort by",
-    "options": {
-      "status": "Status",
-      "evaluationScore": "Evaluation Score",
-      "deadline": "Deadline",
-      "requirementsProgress": "Requirements Progress"
-    }
+
+    "status": "Status",
+    "evaluationScore": "Evaluation Score",
+    "deadline": "Deadline",
+    "requirementsProgress": "Requirements Progress"
   },
   "board": {
     "title": "Board",
-    "columns": {
-      "toApply": "To Apply",
-      "waitingForResponse": "Waiting for Response",
-      "consideringOffer": "Considering Offer",
-      "accepted": "Accepted"
-    }
+
+    "toApply": "To Apply",
+    "waitingForResponse": "Waiting for Response",
+    "consideringOffer": "Considering Offer",
+    "accepted": "Accepted"
   },
   "list": {
     "title": "List",
-    "columns": {
-      "company": "Company / Role",
-      "status": "Status",
-      "deadline": "Deadline",
-      "score": "Score",
-      "progress": "Progress"
-    }
+    "language": "en-US",
+    "company": "Company / Role",
+    "status": "Status",
+    "deadline": "Deadline",
+    "noDeadline": "Not Specified",
+    "score": "Score",
+    "progress": "Progress"
   },
   "internshipWindow": {
     "tabs": {
       "overview": {
         "title": "Overview",
         "sections": {
-          "company": "Company",
+          "company": "Company / Lab",
           "role": "Position / Role",
           "field": "Field / Area",
           "deadline": "Application Deadline",
@@ -58,7 +61,29 @@
       "AIFit": {
         "title": "AI Fit",
         "language": "English",
-        "sections": {
+        "notReady": {
+          "title": "Internship Fit Analysis",
+          "description": "Let Gemini evaluate this internship against your specific personal context expressed in your profile",
+          "button": "Generate Analysis",
+          "loading": "Analyzing ...",
+          "prompt": {
+            "one": "You are an expert career counselor. Please analyze the fit between my personal context and an internship opportunity.",
+            "two": "Personal Context",
+            "three": "Internship",
+            "four": "Description",
+            "five": "No description provided.",
+            "six": "You MUST respond with a valid JSON object using exactly this structure",
+            "seven": "a number out of 100 evaluating the overall fit",
+            "eight": "a 40 to 80 word paragraph explaining why this is or isn't a good fit. Include pros and cons in your reasoning.",
+            "nine": "has to be an array whose length you consider",
+            "ten": "a specific skill or requirement I might be missing",
+            "eleven": "another potential challenge or con",
+            "twelve": "has to be an array whose length you consider",
+            "thirteen": "a specific skill or strength I possess that aligns with the internship",
+            "fourteen": "another strength or relevant experience"
+          }
+        },
+        "ready": {
           "score": "Objective fit score",
           "assessment": "AI Assessment",
           "matching": "Matching Skills",
@@ -70,7 +95,7 @@
         "title": "Requirements",
         "sections": {
           "progressTitle": "Overall Progress",
-          "itemsTitle": "Action Items",
+          "itemsTitle": "Requirements",
           "inputPlaceholder": "Enter requirement",
           "add": "Add"
         }
@@ -78,25 +103,27 @@
       "interview": {
         "title": "Interview",
         "language": "en",
-        "sections": {
-          "interviewDate": "Interview Date",
-          "preparationStrategy": "Preparation Strategy",
-          "tips": "Preparation Tips",
-          "notes": "My Notes"
-        }
+        "countdown": "Countdown",
+        "daysLeft": "Days Left",
+        "interviewDate": "Interview Date",
+        "preparationStrategy": "Preparation Strategy",
+        "tips": "Preparation Tips",
+        "notes": "My Notes"
       },
       "evaluation": {
         "title": "Evaluation",
-        "sections": {
-          "scoreTitle": "Overall Assessment Score",
-          "scoreDescription": "Calculated from 5 criteria",
-          "criteria": {
-            "duration": "Duration",
-            "supervisor": "Supervisor",
-            "location": "Location",
-            "salary": "Salary",
-            "prestige": "Prestige"
-          }
+
+        "scoreTitle": "Assessment Score",
+        "scoreDescription": {
+          "one": "Calculated from",
+          "two": "criteria"
+        },
+        "criteria": {
+          "duration": "Duration",
+          "supervisor": "Supervisor",
+          "location": "Location",
+          "salary": "Salary",
+          "prestige": "Prestige"
         }
       }
     },

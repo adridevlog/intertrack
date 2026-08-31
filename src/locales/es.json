@@ -1,0 +1,136 @@
+{
+  "login": {
+    "description": "La solución inteligente para estudiantes que monitoriza prácticas",
+    "button": "Inicia sesión con Google",
+    "footer": "Sincronizado de forma segura con Firebase."
+  },
+  "navbar": {
+    "title": "InternTrack",
+    "searchPlaceholder": "Busca puestos, empresas",
+    "addNew": "Añadir",
+    "profile": {
+      "personalContext": {
+        "title": "Contexto Personal",
+        "description": "Establece tu contexto personal aquí. Este contexto se utilizará para adaptar las recomendaciones y evaluaciones de prácticas a tus necesidades y preferencias específicas. No se utilizará para ningún otro propósito y permanecerá privado para ti.",
+        "saveButton": "Guardar Cambios"
+      },
+      "logOut": "Cerrar Sesión"
+    }
+  },
+  "sorting": {
+    "title": "Ordenar por",
+
+    "status": "Estado",
+    "evaluationScore": "Puntuación",
+    "deadline": "Fecha Límite",
+    "requirementsProgress": "Progreso de Requisitos"
+  },
+  "board": {
+    "title": "Tablero",
+    "toApply": "Por Postular",
+    "waitingForResponse": "Esperando Respuesta",
+    "consideringOffer": "Considerando Oferta",
+    "accepted": "Aceptado"
+  },
+  "list": {
+    "title": "Lista",
+    "language": "es-ES",
+    "company": "Empresa / Puesto",
+    "status": "Estado",
+    "deadline": "Fecha Límite",
+    "noDeadline": "No Especificada",
+    "score": "Puntuación",
+    "progress": "Progreso"
+  },
+  "internshipWindow": {
+    "tabs": {
+      "overview": {
+        "title": "Resumen",
+        "sections": {
+          "company": "Empresa / Laboratorio",
+          "role": "Posición / Puesto",
+          "field": "Campo / Área",
+          "deadline": "Fecha Límite",
+          "description": "Descripción / Extracto",
+          "location": "Ubicación",
+          "duration": "Duración",
+          "salary": "Salario"
+        }
+      },
+      "AIFit": {
+        "title": "Análisis IA",
+        "language": "Español",
+        "notReady": {
+          "title": "Análisis de Coincidencias",
+          "description": "Deja que Gemini contraste esta práctica con tu contexto personal específico expresado en tu perfil",
+          "button": "Generar Análisis",
+          "loading": "Analizando ...",
+          "prompt": {
+            "one": "Eres un experto consejero en carreras profesionales y académicas. Por favor analiza el contraste y coincidencias entre mi contexto personal y una oporunidad de hacer una práctica.",
+            "two": "Contexto personal",
+            "three": "Práctica",
+            "four": "Descripción",
+            "five": "Descripción no dada.",
+            "six": "DEBES responder con un objeto JSON válido usando exactamente esta estructura",
+            "seven": "Un número del 1 al 100 evaluando como de bien (o de mal) se ajusta la práctica a mi perfil",
+            "eight": "un párrafo de 40 a 80 palabras explicando por qué o por qué no esto es una buena práctica para mí. Incluye puntos positivos y negativos en tu razonamiento.",
+            "nine": "tiene que ser un array con la longitud que consideres",
+            "ten": "una habilidad o requisito que me falta para hacer la práctica",
+            "eleven": "otro reto potencial o contra",
+            "twelve": "tiene que ser un array con la longitud que consideres",
+            "thirteen": "una habilidad o fortaleza específica que yo tengo y se alinea con la práctica",
+            "fourteen": "otra fortaleza o experiencia relevante"
+          }
+        },
+        "ready": {
+          "score": "Porcentaje de coincidencia",
+          "assessment": "Evaluación IA",
+          "matching": "Habilidades Coincidentes",
+          "missing": "Habilidades Por Aprender",
+          "recalculate": "Recalcular"
+        }
+      },
+      "requirements": {
+        "title": "Requisitos",
+        "sections": {
+          "progressTitle": "Progreso General",
+          "itemsTitle": "Requisitos",
+          "inputPlaceholder": "Ingrese requisito",
+          "add": "Agregar"
+        }
+      },
+      "interview": {
+        "title": "Entrevista",
+        "language": "es",
+        "interviewDate": "Fecha de Entrevista",
+        "preparationStrategy": "Estrategia de Preparación",
+        "countdown": "Contador",
+        "daysLeft": "Días Restantes",
+
+        "tips": "Consejos de Preparación",
+        "notes": "Mis Notas"
+      },
+      "evaluation": {
+        "title": "Valoración",
+
+        "scoreTitle": "Puntuación Total de Evaluación",
+        "scoreDescription": {
+          "one": "Calculada a partir de",
+          "two": "criterios"
+        },
+        "criteria": {
+          "duration": "Duración",
+          "supervisor": "Supervisor",
+          "location": "Ubicación",
+          "salary": "Salario",
+          "prestige": "Prestigio"
+        }
+      }
+    },
+    "buttons": {
+      "delete": "Eliminar Práctica",
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios"
+    }
+  }
+}

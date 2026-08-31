@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { Star, Bookmark } from "lucide-react";
 import { calculateScore } from "../tools/functions";
@@ -11,6 +12,13 @@ export default function InternshipList({
   setInternshipWindow,
   evaluationWeights,
 }) {
+  const { t } = useTranslation();
+  const statusListString = [
+    t("board.toApply"),
+    t("board.waitingForResponse"),
+    t("board.consideringOffer"),
+    t("board.accepted"),
+  ];
   const { user } = useUser();
   let statusName;
   let statusStyle;
@@ -20,20 +28,22 @@ export default function InternshipList({
       internship.requirements.length) *
     100
   ).toFixed(0);
-  statusList.map((s) => {
+  statusList.map((s, i) => {
     let array = s.name.split(" ");
     array[0] = array[0].toLowerCase();
     if (array.join("") === internship.status) {
-      statusName = s.name;
+      statusName = statusListString[i];
       statusStyle =
         STATUS_STYLES[array.join("")] || "bg-gray-200 text-gray-800";
     }
   });
-  const deadline = new Date(internship.deadline).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const deadline = internship.deadline
+    ? new Date(internship.deadline).toLocaleDateString(t("list.language"), {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : t("list.noDeadline");
 
   return (
     <tr

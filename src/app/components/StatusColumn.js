@@ -8,6 +8,7 @@ export default function StatusColumn({
   evaluationWeights,
   status,
   handleStatusChange,
+  string,
 }) {
   const filteredInternships = internships.filter((i) => i.status === status);
   const styleArray = name.split(" ");
@@ -40,7 +41,7 @@ export default function StatusColumn({
       <div
         className={`rounded-xl font-semibold border px-5 py-3 text-lg flex flex-row justify-between ${statusStyle}`}
       >
-        <div>{name}</div>
+        <div>{string}</div>
         <div>{filteredInternships.length}</div>
       </div>
       {filteredInternships.map((internship) => {

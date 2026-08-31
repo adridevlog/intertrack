@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
@@ -50,6 +51,29 @@ export default function InternshipWindow({
   statusList,
   evaluationWeights,
 }) {
+  const { t } = useTranslation();
+  const statusListString = [
+    t("board.toApply"),
+    t("board.waitingForResponse"),
+    t("board.consideringOffer"),
+    t("board.accepted"),
+  ];
+
+  const internshipWindowViewsStrings = [
+    t("internshipWindow.tabs.overview.title"),
+    t("internshipWindow.tabs.AIFit.title"),
+    t("internshipWindow.tabs.requirements.title"),
+    t("internshipWindow.tabs.interview.title"),
+    t("internshipWindow.tabs.evaluation.title"),
+  ];
+
+  const internshipWindowCriteria = [
+    t("internshipWindow.tabs.evaluation.criteria.location"),
+    t("internshipWindow.tabs.evaluation.criteria.supervisor"),
+    t("internshipWindow.tabs.evaluation.criteria.prestige"),
+    t("internshipWindow.tabs.evaluation.criteria.salary"),
+    t("internshipWindow.tabs.evaluation.criteria.duration"),
+  ];
   const [formData, setFormData] = useState({
     company: internship?.company || "",
     role: internship?.role || "",
@@ -99,11 +123,11 @@ export default function InternshipWindow({
   } = internship || {};
   let statusName;
   let statusStyle;
-  statusList.map((s) => {
+  statusList.map((s, i) => {
     let array = s.name.split(" ");
     array[0] = array[0].toLowerCase();
     if (array.join("") === internship.status) {
-      statusName = s.name;
+      statusName = statusListString[i];
       statusStyle =
         STATUS_STYLES[array.join("")] || "bg-gray-200 text-gray-800";
     }
@@ -119,25 +143,25 @@ export default function InternshipWindow({
         "Company, role, and personal context are required fields.",
       );
     }
-    const prompt = `You are an expert career counselor. Please analyze the fit between my personal context and an internship opportunity.
+    const prompt = `${t("internshipWindow.tabs.AIFit.notReady.prompt.one")}
 
-  Personal Context: ${personalContext}
-  Internship: ${company} - ${role}
-  Description: ${description ? description : "No description provided."}
+    ${t("internshipWindow.tabs.AIFit.notReady.prompt.two")}: ${personalContext}
+    ${t("internshipWindow.tabs.AIFit.notReady.prompt.three")}: ${company} - ${role}
+    ${t("internshipWindow.tabs.AIFit.notReady.prompt.four")}: ${description ? description : t("internshipWindow.tabs.AIFit.notReady.prompt.five")}
 
-  You MUST respond with a valid JSON object using exactly this structure:
-    {
-      "score": <a number out of 100 evaluating the overall fit>,
-      "overview": "<a 40 to 80 word paragraph explaining why this is or isn't a good fit. Include pros and cons in your reasoning.>",
-      "missingRequirements" (has to be an array): [
-        "<a specific skill or requirement the user might be missing>",
-        "<another potential challenge or con>"
-      ],
-      "matchingSkills" (has to be an array): [
-        "<a specific skill or strength the user possesses that aligns with the internship>",
-        "<another strength or relevant experience>"
-      ]
-    }`;
+    ${t("internshipWindow.tabs.AIFit.notReady.prompt.six")}:
+      {
+        "score": <${t("internshipWindow.tabs.AIFit.notReady.prompt.seven")}>,
+        "overview": "<${t("internshipWindow.tabs.AIFit.notReady.prompt.eight")}>",
+        "missingRequirements" (${t("internshipWindow.tabs.AIFit.notReady.prompt.nine")}): [
+          "<${t("internshipWindow.tabs.AIFit.notReady.prompt.ten")}>",
+          "<${t("internshipWindow.tabs.AIFit.notReady.prompt.eleven")}>"
+        ],
+        "matchingSkills" (${t("internshipWindow.tabs.AIFit.notReady.prompt.twelve")}): [
+          "<${t("internshipWindow.tabs.AIFit.notReady.prompt.thirteen")}>",
+          "<${t("internshipWindow.tabs.AIFit.notReady.prompt.fourteen")}>"
+        ]
+      }`;
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3.6-flash",
@@ -329,7 +353,7 @@ export default function InternshipWindow({
             <p className="text-md font-semibold mb-2">{role}</p>
           </div>
           <div className="mt-4 flex flex-row gap-5 border-b border-gray-300 pb-2 overflow-hidden overflow-x-auto flex-nowrap">
-            {internshipWindowViews.map((view) => {
+            {internshipWindowViews.map((view, i) => {
               const isActiveStyle =
                 activeView === view
                   ? "text-indigo-700"
@@ -340,7 +364,7 @@ export default function InternshipWindow({
                     className={`text-md font-medium cursor-pointer ${isActiveStyle} transition-all duration-100`}
                     onClick={() => setActiveView(view)}
                   >
-                    {view}
+                    {internshipWindowViewsStrings[i]}
                   </div>
                   {activeView === view && (
                     <motion.span
@@ -364,20 +388,20 @@ export default function InternshipWindow({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <OverviewBaseInput
                   name="company"
-                  label="company"
+                  label={t("internshipWindow.tabs.overview.sections.company")}
                   valueInput={formData.company}
                   type="text"
                   handleChange={handleChange}
                 />
                 <OverviewBaseInput
                   name="role"
-                  label="position / role"
+                  label={t("internshipWindow.tabs.overview.sections.role")}
                   valueInput={formData.role}
                   type="text"
                   handleChange={handleChange}
                 />
                 <OverviewBaseInput
-                  label="category / field"
+                  label={t("internshipWindow.tabs.overview.sections.field")}
                   name="category"
                   valueInput={formData.category}
                   type="text"
@@ -385,7 +409,7 @@ export default function InternshipWindow({
                 />
                 <OverviewBaseInput
                   name="deadline"
-                  label="Deadline"
+                  label={t("internshipWindow.tabs.overview.sections.deadline")}
                   valueInput={formData.deadline}
                   type="date"
                   handleChange={handleChange}
@@ -393,7 +417,7 @@ export default function InternshipWindow({
               </div>
               <OverviewBaseInput
                 name="excerpt"
-                label="description / excerpt"
+                label={t("internshipWindow.tabs.overview.sections.description")}
                 valueInput={formData.excerpt}
                 type="text"
                 rows="3"
@@ -403,19 +427,19 @@ export default function InternshipWindow({
               <div className="flex flex-row flex-wrap gap-2 row-gap-2 pb-6">
                 <OverviewBottomInput
                   name="location"
-                  label="Location"
+                  label={t("internshipWindow.tabs.overview.sections.location")}
                   valueInput={formData.location}
                   handleChange={handleChange}
                 />
                 <OverviewBottomInput
                   name="duration"
-                  label="Duration"
+                  label={t("internshipWindow.tabs.overview.sections.duration")}
                   valueInput={formData.duration}
                   handleChange={handleChange}
                 />
                 <OverviewBottomInput
                   name="salary"
-                  label="Salary"
+                  label={t("internshipWindow.tabs.overview.sections.salary")}
                   valueInput={formData.salary}
                   handleChange={handleChange}
                 />
@@ -427,11 +451,10 @@ export default function InternshipWindow({
               {formData.AIFit === "" && (
                 <div className="w-full h-full flex flex-col gap-6 bg-indigo-50/50 p-6 border border-slate-200 rounded-lg items-center justify-center">
                   <div className="text-lg text-indigo-900 font-bold tracking-wide">
-                    Internship Fit Analysis
+                    {t("internshipWindow.tabs.AIFit.notReady.title")}
                   </div>
                   <div className="text-sm text-indigo-700/80  text-center">
-                    Let Gemini evaluate this internship against your specific
-                    personal context expressed in your profile
+                    {t("internshipWindow.tabs.AIFit.notReady.description")}
                   </div>
                   {!isAnalyzing && (
                     <button
@@ -439,12 +462,12 @@ export default function InternshipWindow({
                       onClick={handleAIFit}
                     >
                       <span>✨</span>
-                      Generate Analysis
+                      {t("internshipWindow.tabs.AIFit.notReady.button")}
                     </button>
                   )}
                   {isAnalyzing && (
                     <button className="bg-indigo-600/70 text-white font-bold py-2 px-6 rounded-lg shadow-sm flex items-center justify-center gap-2 mx-auto transition-colors disabled:opacity-50">
-                      Analyzing ...
+                      {t("internshipWindow.tabs.AIFit.notReady.loading")}
                     </button>
                   )}
                 </div>
@@ -471,7 +494,7 @@ export default function InternshipWindow({
                         <circle cx="12" cy="12" r="2"></circle>
                       </svg>
                       <div className="text-[10px] uppercase tracking-widest font-bold text-indigo-200 mb-2 relative z-10">
-                        Objective Fit Score
+                        {t("internshipWindow.tabs.AIFit.ready.score")}
                       </div>
                       <div className="text-6xl font-black relative z-10">
                         {formData.AIFit.score}
@@ -503,7 +526,7 @@ export default function InternshipWindow({
                           <path d="M6 18a4 4 0 0 1-1.967-.516"></path>
                           <path d="M19.967 17.484A4 4 0 0 1 18 18"></path>
                         </svg>
-                        AI Assessment
+                        {t("internshipWindow.tabs.AIFit.ready.assessment")}
                       </h4>
                       <p className="text-sm text-slate-700 font-medium leading-relaxed">
                         {formData.AIFit.overview}
@@ -513,7 +536,7 @@ export default function InternshipWindow({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="bg-emerald-50 rounded-xl p-5 border border-emerald-100">
                       <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-3">
-                        Matching Skills
+                        {t("internshipWindow.tabs.AIFit.ready.matching")}
                       </h4>
                       <ul className="space-y-2">
                         {formData.AIFit.matchingSkills.map((skill, index) => (
@@ -544,7 +567,7 @@ export default function InternshipWindow({
                     </div>
                     <div className="bg-red-50 rounded-xl p-5 border border-red-100">
                       <h4 className="text-xs font-bold text-red-800 uppercase tracking-wider mb-3">
-                        Missing / To Learn
+                        {t("internshipWindow.tabs.AIFit.ready.missing")}
                       </h4>
                       <ul className="space-y-2">
                         {formData.AIFit.missingRequirements.map(
@@ -580,7 +603,8 @@ export default function InternshipWindow({
                     onClick={handleAIFit}
                     className="my-6  hover:text-gray-800  hover:bg-gray-50 text-gray-600 font-bold py-2 px-6 rounded-lg shadow-sm flex items-center justify-center gap-1 mx-auto transition-colors disabled:opacity-50 cursor-pointer"
                   >
-                    <span>🔄</span> Recalculate
+                    <span>🔄</span>{" "}
+                    {t("internshipWindow.tabs.AIFit.ready.recalculate")}
                   </button>
                 </div>
               )}
@@ -591,7 +615,9 @@ export default function InternshipWindow({
               <div className="flex flex-col items-center gap-2 mt-4 w-full">
                 <div className="flex justify-between w-full">
                   <span className="text-gray-800 tracking-wide font-bold text-lg">
-                    Overall progress
+                    {t(
+                      "internshipWindow.tabs.requirements.sections.progressTitle",
+                    )}
                   </span>
                   <span
                     className={`text-xl ${progress === "100" ? "text-green-700" : "text-indigo-800"} font-black tracking-wide`}
@@ -609,7 +635,9 @@ export default function InternshipWindow({
                 </div>
               </div>
               <div className="mt-6">
-                <span className="text-black text-lg">Action Items</span>
+                <span className="text-black text-lg">
+                  {t("internshipWindow.tabs.requirements.sections.itemsTitle")}
+                </span>
                 <div className="flex flex-col mt-4">
                   {formData.requirements.map((requirement, index) => {
                     const style = formData.requirements[index]?.done
@@ -659,7 +687,9 @@ export default function InternshipWindow({
                 >
                   <input
                     className="text-base text-gray-700 rounded-xl bg-gray-200 border-2 border-gray-300 w-80 px-2 py-0.5 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="Enter requirement and press enter"
+                    placeholder={t(
+                      "internshipWindow.tabs.requirements.sections.inputPlaceholder",
+                    )}
                     value={requirementInput}
                     onChange={handleRequirementInputChange}
                     onKeyDown={handleKeyDown}
@@ -683,7 +713,7 @@ export default function InternshipWindow({
                       setEditRequirement(false);
                     }}
                   >
-                    Add
+                    {t("internshipWindow.tabs.requirements.sections.add")}
                   </button>
                 </div>
               </div>
@@ -693,7 +723,7 @@ export default function InternshipWindow({
             <div className="flex flex-col w-full">
               <div className="flex flex-col bg-blue-50 p-6 gap-3 w-full fit-content h-fit rounded-lg border border-blue-200">
                 <div className="uppercase text-base text-blue-800 font-semibold">
-                  Interview date
+                  {t("internshipWindow.tabs.interview.title")}
                 </div>
                 <input
                   type="datetime-local"
@@ -707,17 +737,18 @@ export default function InternshipWindow({
                     <Clock3 className="w-12 h-12 text-white bg-indigo-600 p-2 rounded-xl"></Clock3>
                     <div className="flex flex-col  justify-between">
                       <div className="uppercase text-sm text-blue-900 font-medium">
-                        Countdown
+                        {t("internshipWindow.tabs.interview.countdown")}
                       </div>
                       <div className="font-extrabold text-lg text-amber-700">
-                        {interviewDaysAway} Days Left
+                        {interviewDaysAway}{" "}
+                        {t("internshipWindow.tabs.interview.daysLeft")}
                       </div>
                     </div>
                   </div>
                 )}
               </div>
               <div className="text-black font-semibold text-lg mt-7">
-                Preparation Strategy
+                {t("internshipWindow.tabs.interview.preparationStrategy")}
               </div>
               <div className="mt-4 flex flex-col items-baseline w-full gap-4 pb-6">
                 <OverviewBaseInput
@@ -725,7 +756,7 @@ export default function InternshipWindow({
                   name="tips"
                   handleChange={handleInterviewChange}
                   valueInput={formData.interview.tips}
-                  label="Preparation tips"
+                  label={t("internshipWindow.tabs.interview.tips")}
                   rows="3"
                 />
 
@@ -734,7 +765,7 @@ export default function InternshipWindow({
                   name="notes"
                   handleChange={handleInterviewChange}
                   valueInput={formData.interview.notes}
-                  label="My Notes (What to mention)"
+                  label={t("internshipWindow.tabs.interview.notes")}
                   rows="3"
                 />
               </div>
@@ -745,11 +776,12 @@ export default function InternshipWindow({
               <div className="bg-amber-100 p-6 border border-amber-200 flex flex-col sm:flex-row justify-between rounded-lg gap-4">
                 <div className="flex flex-col gap-2">
                   <p className="font-bold text-md text-amber-800">
-                    Overall Assessment Score
+                    {t("internshipWindow.tabs.evaluation.title")}
                   </p>
                   <p className="text-amber-600">
-                    Calculated from {Object.keys(formData.evaluation).length}{" "}
-                    weighted criteria
+                    {t("internshipWindow.tabs.evaluation.scoreDescription.one")}{" "}
+                    {Object.keys(formData.evaluation).length}{" "}
+                    {t("internshipWindow.tabs.evaluation.scoreDescription.two")}
                   </p>
                 </div>
                 <div className="bg-amber-50 border-2 border-amber-200 p-4  flex gap-2 items-center rounded-md">
@@ -763,7 +795,7 @@ export default function InternshipWindow({
                 </div>
               </div>
               <div className="flex flex-col gap-4 w-full pb-6">
-                {Object.entries(formData.evaluation).map(([key, value]) => {
+                {Object.entries(formData.evaluation).map(([key, value], i) => {
                   const width = `w-[${evaluationKeysWidth}px]`;
                   return (
                     <div className="flex items-center" key={`evaluation${key}`}>
@@ -771,7 +803,7 @@ export default function InternshipWindow({
                         className={`text-gray-800 text-md font-medium whitespace-nowrap`}
                         style={{ width: `${evaluationKeysWidth}px` }}
                       >
-                        {key}
+                        {internshipWindowCriteria[i]}
                       </div>
                       <input
                         type="range"
@@ -797,20 +829,20 @@ export default function InternshipWindow({
             className="text-red-600 hover:text-red-800 px-4 py-2 rounded-lg cursor-pointer tracking-wide font-bold transition-all"
             onClick={handleDeleteInternship}
           >
-            Delete Internship
+            {t("internshipWindow.buttons.delete")}
           </button>
           <div className="flex gap-3 items-center">
             <button
               className="text-gray-700 hover:bg-gray-200 transition-all text-md rounded-lg px-4 py-2 cursor-pointer tracking-wide font-medium"
               onClick={closeWindow}
             >
-              Cancel
+              {t("internshipWindow.buttons.cancel")}
             </button>
             <button
               className="text-white text-md bg-indigo-600 hover:bg-indigo-800 transition-all px-4 py-2 rounded-lg cursor-pointer font-medium tracking-wide"
               onClick={handleSaveChanges}
             >
-              Save Changes
+              {t("internshipWindow.buttons.save")}
             </button>
           </div>
         </div>

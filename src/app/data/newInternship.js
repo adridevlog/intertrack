@@ -1,6 +1,6 @@
 export const newInternship = {
-  company: "Company/Lab Name",
-  role: "Role / Position",
+  company: "",
+  role: "",
   category: "",
   status: "toApply",
   excerpt: "",
