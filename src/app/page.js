@@ -244,7 +244,7 @@ export default function Home() {
             : ""
         }`}
       >
-        <div className="absolute flex items-center gap-2 bg-gray-100 rounded-lg p-2 top-25 right-6">
+        <div className="absolute flex items-center gap-2 bg-gray-100 rounded-lg p-2 top-42 right-3 sm:top-25 sm:right-6">
           <Globe className="w-5 h-5 text-gray-500" />
           <select
             onChange={changeLanguage}
