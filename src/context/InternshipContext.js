@@ -1,6 +1,9 @@
 "use client";
 import { createContext, useState, useContext } from "react";
 import { INITIAL_DATA } from "../data/internships-mock.js";
+import { useAuthenticationChanges } from "@/hooks/useAuthenticationChanges.js";
+import { useListenToData } from "@/hooks/useListenToData.js";
+
 // 1. Create the Context
 const InternshipContext = createContext();
 
@@ -24,6 +27,18 @@ export function InternshipProvider({ children }) {
     text: "",
   });
 
+  const [activeLayout, setActiveLayout] = useState("board");
+  const [sort, setSort] = useState("status");
+  useAuthenticationChanges({ setInternships, setLoading, setUser });
+  useListenToData({
+    user,
+    setInternships,
+    setLoading,
+    setPersonalContext,
+    setActiveLayout,
+    setSort,
+  });
+
   return (
     <InternshipContext.Provider
       value={{
@@ -39,6 +54,10 @@ export function InternshipProvider({ children }) {
         setUser,
         personalContext,
         setPersonalContext,
+        activeLayout,
+        setActiveLayout,
+        sort,
+        setSort,
       }}
     >
       {children}

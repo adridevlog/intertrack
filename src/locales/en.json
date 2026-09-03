@@ -9,6 +9,9 @@
     "searchPlaceholder": "Search roles, companies",
     "addNew": "Add New",
     "profile": {
+      "personalProfile": {
+        "title": "My Profile"
+      },
       "personalContext": {
         "title": "Personal Context",
         "description": "Set your personal context here. This context will be used to tailor the internship recommendations and evaluations to your specific needs and preferences. It will not be used for any other purpose and will remain private to you.",

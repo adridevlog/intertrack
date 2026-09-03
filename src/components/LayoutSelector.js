@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "motion/react";
 import { useInternship } from "../context/InternshipContext";
-import { updatePreferenceInCloud } from "../tools/functions";
+import { updatePreferenceInCloud } from "../tools/firebaseActions";
 
 export default function LayoutSelector({
   name,

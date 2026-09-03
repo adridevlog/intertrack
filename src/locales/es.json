@@ -9,6 +9,9 @@
     "searchPlaceholder": "Busca puestos, empresas",
     "addNew": "Añadir",
     "profile": {
+      "personalProfile": {
+        "title": "Mi Perfil"
+      },
       "personalContext": {
         "title": "Contexto Personal",
         "description": "Establece tu contexto personal aquí. Este contexto se utilizará para adaptar las recomendaciones y evaluaciones de prácticas a tus necesidades y preferencias específicas. No se utilizará para ningún otro propósito y permanecerá privado para ti.",

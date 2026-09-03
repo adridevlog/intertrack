@@ -2,7 +2,15 @@
 
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { Search, Plus, LogOut, UserRoundPen, Globe } from "lucide-react";
+import Link from "next/link.js";
+import {
+  Search,
+  Plus,
+  LogOut,
+  UserRoundPen,
+  CircleUser,
+  Globe,
+} from "lucide-react";
 import {
   useInternship,
   useUser,
@@ -10,9 +18,9 @@ import {
 } from "../context/InternshipContext.js";
 import { useState } from "react";
 import { newInternship } from "../data/newInternship.js";
-import { addInternship } from "../tools/functions.js";
+import { addInternship } from "../tools/firebaseActions.js";
 import { signOut } from "firebase/auth";
-import { auth } from "../../../firebase.js";
+import { auth } from "../../firebase.js";
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
@@ -121,6 +129,15 @@ export default function Navbar() {
                     <p className="text-xs font-medium text-slate-500 truncate">
                       {user.email}
                     </p>
+                  </div>
+                  <div className="p-1">
+                    <Link
+                      href={`/profile?u=${user.username}`}
+                      className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <CircleUser className="w-4 h-4" />
+                      {t("navbar.profile.personalProfile.title")}
+                    </Link>
                   </div>
                   <div className="p-1">
                     <button

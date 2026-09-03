@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { doc, collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../../firebase.js";
+import { db } from "../../firebase.js";
 import {
   useInternship,
   useLoading,
@@ -8,12 +8,14 @@ import {
   usePersonalContext,
 } from "../context/InternshipContext.js";
 
-export const useListenToData = ({ setActiveLayout, setSort }) => {
-  const { user } = useUser();
-  const { loading, setLoading } = useLoading();
-  const { internships, setInternships } = useInternship();
-  const { personalContext, setPersonalContext } = usePersonalContext();
-
+export const useListenToData = ({
+  user,
+  setInternships,
+  setLoading,
+  setPersonalContext,
+  setActiveLayout,
+  setSort,
+}) => {
   useEffect(() => {
     if (!user) return;
 
@@ -39,7 +41,6 @@ export const useListenToData = ({ setActiveLayout, setSort }) => {
 
     const unsubInternships = onSnapshot(internshipsColRef, (snapshot) => {
       const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      console.log(items);
       setInternships(items);
       setLoading(false);
     });

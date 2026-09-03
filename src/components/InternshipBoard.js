@@ -2,17 +2,15 @@ import { useTranslation } from "react-i18next";
 import {
   MapPin,
   Calendar,
-  StarIcon,
   Star,
   DollarSign,
   Clock,
   Bookmark,
 } from "lucide-react";
-import { motion } from "motion/react";
-import { calculateScore } from "../tools/functions";
+import { calculateScore, calculateProgress } from "../tools/functions";
 import CompanyLogo from "./CompanyLogo.js";
 import { useUser } from "../context/InternshipContext.js";
-import { updateInternship } from "../tools/functions.js";
+import { updateInternship } from "../tools/firebaseActions";
 
 export default function InternshipBoard({
   internship,
@@ -24,20 +22,15 @@ export default function InternshipBoard({
     role,
     evaluation,
     company,
-    position,
     location,
-    status,
     deadline,
     salary,
     duration,
+    requirements,
   } = internship;
   const { user } = useUser();
   const averageScore = calculateScore(evaluation, evaluationWeights);
-  const progress = (
-    (Object.values(internship.requirements).filter((r) => r.done).length /
-      internship.requirements.length) *
-    100
-  ).toFixed(0);
+  const { progress } = calculateProgress(requirements);
   const deadlineDate = new Date(deadline).toLocaleDateString(
     t("list.language"),
     {
@@ -113,7 +106,7 @@ export default function InternshipBoard({
           </div>
         )}
       </div>
-      {internship.requirements.length > 0 && (
+      {requirements.length > 0 && (
         <div className="flex items-center gap-2 mt-4">
           <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
             <div

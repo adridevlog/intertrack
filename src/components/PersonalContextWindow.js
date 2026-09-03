@@ -1,4 +1,4 @@
-import { updatePersonalContext } from "../tools/functions.js";
+import { updatePersonalContext } from "../tools/firebaseActions.js";
 import { usePersonalContext } from "../context/InternshipContext.js";
 import { useState } from "react";
 import { useUser } from "../context/InternshipContext.js";

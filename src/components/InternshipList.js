@@ -3,7 +3,7 @@ import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { Star, Bookmark } from "lucide-react";
 import { calculateScore } from "../tools/functions";
 import CompanyLogo from "./CompanyLogo";
-import { updateInternship } from "../tools/functions";
+import { updateInternship } from "../tools/firebaseActions";
 import { useUser } from "../context/InternshipContext";
 
 export default function InternshipList({
