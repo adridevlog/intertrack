@@ -67,7 +67,6 @@ export const useAIFit = ({
         ...prevData,
         AIFit: response,
       }));
-      console.log("AI Fit Response:", response);
     } catch (error) {
       console.error(error);
     } finally {

@@ -45,7 +45,7 @@ export const updatePersonalContext = async (updatedFields, user) => {
   await setDoc(docRef, updatedFields);
 };
 
-export async function getUserByUsername(username) {
+/*export async function getUserByUsername(username) {
   try {
     if (!username) return null;
     const usersRef = collection(db, "users");
@@ -56,6 +56,48 @@ export async function getUserByUsername(username) {
     }
     const userDoc = querySnapshot.docs[0];
     const userData = userDoc.data();
+    const internshipsColRef = collection(
+      db,
+      "users",
+      userDoc.id,
+      "internships",
+    );
+    const internshipsSnapshot = await getDocs(internshipsColRef);
+    const internshipsData = internshipsSnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    return {
+      id: userDoc.id,
+      internships: internshipsData,
+      ...userData,
+    };
+  } catch (error) {
+    console.error("Error fetching profile by username:", error);
+    return null;
+  }
+}*/
+
+export const editProfile = (key, value, user) => {
+  if (!user) return;
+  const docRef = doc(db, "users", user.uid);
+  setDoc(docRef, { [key]: value }, { merge: true });
+};
+
+export async function getUserByUsername(username) {
+  try {
+    if (!username) return null;
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+
+    // We removed the internships fetch from here!
     return {
       id: userDoc.id,
       ...userData,
@@ -63,5 +105,35 @@ export async function getUserByUsername(username) {
   } catch (error) {
     console.error("Error fetching profile by username:", error);
     return null;
+  }
+}
+
+export async function checkUsernameAvailability(requestedUsername) {
+  if (!requestedUsername || requestedUsername.length < 3) return false;
+
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", requestedUsername));
+    const querySnapshot = await getDocs(q);
+
+    // If empty is true, the username doesn't exist yet (it's available)
+    return querySnapshot.empty;
+  } catch (error) {
+    console.error("Error checking username:", error);
+    return false;
+  }
+}
+
+export async function getPublicInternships(targetUserId) {
+  try {
+    const internshipsRef = collection(db, "users", targetUserId, "internships");
+    // THIS is the line that prevents the permission crash:
+    const q = query(internshipsRef, where("isPublic", "==", true));
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching public internships:", error);
+    return [];
   }
 }

@@ -13,6 +13,7 @@ export function InternshipProvider({ children }) {
     active: false,
     internship: null,
   });
+  const [profile, setProfile] = useState({});
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -37,6 +38,7 @@ export function InternshipProvider({ children }) {
     setPersonalContext,
     setActiveLayout,
     setSort,
+    setProfile,
   });
 
   return (
@@ -58,6 +60,8 @@ export function InternshipProvider({ children }) {
         setActiveLayout,
         sort,
         setSort,
+        profile,
+        setProfile,
       }}
     >
       {children}
@@ -83,5 +87,17 @@ export function useInternshipWindow() {
 }
 
 export function usePersonalContext() {
+  return useContext(InternshipContext);
+}
+
+export function useActiveLayout() {
+  return useContext(InternshipContext);
+}
+
+export function useSort() {
+  return useContext(InternshipContext);
+}
+
+export function useProfile() {
   return useContext(InternshipContext);
 }

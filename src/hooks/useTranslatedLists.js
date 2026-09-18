@@ -19,6 +19,10 @@ export const useTranslatedLists = () => {
       name: "Accepted",
       status: "accepted",
     },
+    {
+      name: "Finalized",
+      status: "finalized",
+    },
   ];
 
   const statusListString = [
@@ -26,6 +30,7 @@ export const useTranslatedLists = () => {
     t("board.waitingForResponse"),
     t("board.consideringOffer"),
     t("board.accepted"),
+    t("board.finalized"),
   ];
 
   const internshipWindowViewsStrings = [

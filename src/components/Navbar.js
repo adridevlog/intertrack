@@ -10,6 +10,7 @@ import {
   UserRoundPen,
   CircleUser,
   Globe,
+  Settings,
 } from "lucide-react";
 import {
   useInternship,
@@ -18,9 +19,9 @@ import {
 } from "../context/InternshipContext.js";
 import { useState } from "react";
 import { newInternship } from "../data/newInternship.js";
-import { addInternship } from "../tools/firebaseActions.js";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase.js";
+import { LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
@@ -36,22 +37,6 @@ export default function Navbar() {
   const { personalContext, setPersonalContext } = usePersonalContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const { user } = useUser();
-  const handleAddInternship = async () => {
-    // 1. Wait for Firebase to create it and give us the ID
-    const newId = await addInternship(newInternship, user);
-
-    // 2. Attach the ID to our local object
-    const internshipWithId = {
-      ...newInternship,
-      id: newId,
-    };
-
-    // 3. Open the window using the object that now has the correct ID
-    setInternshipWindow({
-      active: true,
-      internship: internshipWithId,
-    });
-  };
 
   const handleLogout = async () => {
     try {
@@ -81,13 +66,15 @@ export default function Navbar() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 shrink-0">
-        <button
-          className="order-2 sm:order-1 h-11 flex flex-row bg-indigo-600 rounded-4xl px-4 py-2 text-lg font-bold gap-4 align-center cursor-pointer hover:bg-indigo-700 transition-colors"
-          onClick={handleAddInternship}
+        <Link
+          href="/"
+          className="flex flex-row  gap-3 items-center  hover:bg-slate-50 px-4 py-2 rounded-lg transition-all group"
         >
-          <Plus className="w-6 h-6 self-center"></Plus>
-          <span className="self-center">{t("navbar.addNew")}</span>
-        </button>
+          <LayoutDashboard className="w-6 h-6 text-gray-500 group-hover:text-indigo-500 transition-all" />
+          <span className="text-gray-600 text-lg font-medium group-hover:text-indigo-700 transition-all">
+            Dashboard
+          </span>
+        </Link>
         {user && (
           <div className="relative ml-2 order-1 sm:order-2">
             <button
@@ -120,7 +107,7 @@ export default function Navbar() {
                   onClick={() => setShowDropdown(false)}
                 ></div>
 
-                <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-lg border border-slate-100 z-50 overflow-hidden">
+                <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-lg border border-slate-100 z-50 overflow-hidden p-2">
                   <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
                     <p className="text-sm font-bold text-slate-800 truncate">
                       {user.displayName}
@@ -148,6 +135,17 @@ export default function Navbar() {
                     >
                       <UserRoundPen className="w-4 h-4" />
                       {t("navbar.profile.personalContext.title")}
+                    </button>
+                  </div>
+                  <div className="p-1 border-b border-b-gray-300">
+                    <button
+                      onClick={() =>
+                        setPersonalContext({ ...personalContext, active: true })
+                      }
+                      className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Settings
                     </button>
                   </div>
                   <div className="p-1">

@@ -36,7 +36,7 @@ export default function StatusColumn({
     <div
       onDragOver={handleDragOver}
       onDrop={handleDrop}
-      className="flex flex-col min-w-100 grow-0 basis-auto shrink-0 gap-4 pb-14"
+      className="flex flex-col w-70 grow-0 basis-auto shrink-0 gap-4 pb-14"
     >
       <div
         className={`rounded-xl font-semibold border px-5 py-3 text-lg flex flex-row justify-between ${statusStyle}`}

@@ -15,6 +15,7 @@ export const useListenToData = ({
   setPersonalContext,
   setActiveLayout,
   setSort,
+  setProfile,
 }) => {
   useEffect(() => {
     if (!user) return;
@@ -29,6 +30,7 @@ export const useListenToData = ({
       "config",
       "personalContext",
     );
+    const profileDocRef = doc(db, "users", user.uid);
 
     // Fetch user preferences (like sorting)
     const unsubSettings = onSnapshot(settingsDocRef, (docSnap) => {
@@ -64,10 +66,18 @@ export const useListenToData = ({
       },
     );
 
+    const unsubProfile = onSnapshot(profileDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfile(data);
+      }
+    });
+
     return () => {
       unsubSettings();
       unsubInternships();
       unsubPersonalContext();
+      unsubProfile();
     };
   }, [
     user,
@@ -76,5 +86,6 @@ export const useListenToData = ({
     setPersonalContext,
     setActiveLayout,
     setSort,
+    setProfile,
   ]);
 };

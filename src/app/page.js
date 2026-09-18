@@ -4,14 +4,19 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LayoutSelector from "../components/LayoutSelector";
 import { INITIAL_evaluationWeights } from "../data/evaluationWeights-mock";
-import { List, LayoutGrid, Globe } from "lucide-react";
+import { List, LayoutGrid, Globe, Plus } from "lucide-react";
 import StatusColumn from "../components/StatusColumn";
 import InternshipList from "../components/InternshipList";
+import InternshipBoard from "../components/InternshipBoard";
 import InternshipWindow from "../components/InternshipWindow";
+import { newInternship } from "../data/newInternship";
 import {
   useInternship,
   usePersonalContext,
+  useActiveLayout,
+  useSort,
 } from "../context/InternshipContext.js";
+import { addInternship } from "../tools/firebaseActions.js";
 import { calculateScore, prepareInternships } from "../tools/functions";
 import { auth, db, googleProvider } from "../../firebase.js";
 import { signInWithPopup } from "firebase/auth";
@@ -32,7 +37,7 @@ export default function Home() {
   };
   const { user, setUser } = useUser();
   const { loading, setLoading } = useLoading();
-  const [activeLayout, setActiveLayout] = useState("board");
+  const { activeLayout, setActiveLayout } = useActiveLayout();
   const { personalContext, setPersonalContext } = usePersonalContext();
   const { statusList, statusListString } = useTranslatedLists();
   const {
@@ -45,7 +50,7 @@ export default function Home() {
   const [evaluationWeights, setEvaluationWeights] = useState(
     INITIAL_evaluationWeights,
   );
-  const [sort, setSort] = useState("status");
+  const { sort, setSort } = useSort();
 
   const handleLogin = async () => {
     try {
@@ -62,6 +67,23 @@ export default function Home() {
 
   const updateInternshipStatus = (internshipId, newStatus) => {
     updateInternship(internshipId, { status: newStatus }, user);
+  };
+
+  const handleAddInternship = async () => {
+    // 1. Wait for Firebase to create it and give us the ID
+    const newId = await addInternship(newInternship, user);
+
+    // 2. Attach the ID to our local object
+    const internshipWithId = {
+      ...newInternship,
+      id: newId,
+    };
+
+    // 3. Open the window using the object that now has the correct ID
+    setInternshipWindow({
+      active: true,
+      internship: internshipWithId,
+    });
   };
 
   useEffect(() => {
@@ -86,6 +108,9 @@ export default function Home() {
     sort,
     statusList,
     evaluationWeights,
+  );
+  const finalizedInternships = internships.filter(
+    (internship) => internship.status === "finalized",
   );
 
   if (loading) return <div>Loading your cloud workspace...</div>;
@@ -210,10 +235,21 @@ export default function Home() {
             </select>
           </div>
         </div>
+        <div>
+          <button
+            className="order-2 sm:order-1 h-11 flex text-white flex-row bg-indigo-600 rounded-4xl px-4 py-2 text-lg font-bold gap-4 align-center cursor-pointer hover:bg-indigo-700 transition-colors"
+            onClick={handleAddInternship}
+          >
+            <Plus className="w-6 h-6 self-center"></Plus>
+            <span className="self-center">{t("navbar.addNew")}</span>
+          </button>
+        </div>
+
         <div className="overflow-hidden w-full">
           {activeLayout === "board" && (
             <div className="flex flex-row overflow-x-auto flex-nowrap w-full gap-5">
               {statusList.map((statusItem, i) => {
+                if (i === 4) return;
                 const { name, status } = statusItem;
                 return (
                   <StatusColumn
@@ -254,6 +290,31 @@ export default function Home() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+        <div className="w-full h-full flex items-center justify-center p-8 border rounded-lg bg-white">
+          {finalizedInternships.length === 0 && (
+            <p className="text-gray-500">
+              No finalized internships found. Accept internships to finalize
+              them.
+            </p>
+          )}
+          {finalizedInternships.length > 0 && (
+            <div className="flex flex-col gap-4 w-full">
+              <div className="text-xl font-bold text-gray-800">
+                Finalized Internships
+              </div>
+              {finalizedInternships.map((internship) => {
+                return (
+                  <InternshipBoard
+                    key={internship.id}
+                    internship={internship}
+                    setInternshipWindow={setInternshipWindow}
+                    evaluationWeights={evaluationWeights}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

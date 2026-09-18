@@ -26,4 +26,5 @@ export const newInternship = {
   marked: false,
   acceptedDate: null,
   AIFit: "",
+  isPublic: false,
 };

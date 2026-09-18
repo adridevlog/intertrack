@@ -33,7 +33,8 @@
     "toApply": "Por Postular",
     "waitingForResponse": "Esperando Respuesta",
     "consideringOffer": "Considerando Oferta",
-    "accepted": "Aceptado"
+    "accepted": "Aceptado",
+    "finalized": "Finalizado"
   },
   "list": {
     "title": "Lista",
@@ -46,6 +47,8 @@
     "progress": "Progreso"
   },
   "internshipWindow": {
+    "finalize": "Finalizar",
+    "finalized": "Finalizado",
     "tabs": {
       "overview": {
         "title": "Resumen",

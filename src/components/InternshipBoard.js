@@ -80,7 +80,7 @@ export default function InternshipBoard({
         </div>
       </div>
       <div className="text-gray-600 font-semibold  text-md">{role}</div>
-      <div className="mt-3 flex flex-row gap-2 items-center text-md text-gray-800 ">
+      <div className="mt-3 flex flex-row gap-2 items-center text-md text-gray-800 flex-wrap">
         {location && (
           <div className="rounded-lg py-1 px-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center ">
             <MapPin className="w-4 h-4 text-gray-700 " />

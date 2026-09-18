@@ -70,6 +70,7 @@ export function prepareInternships(
 ) {
   let filteredInternships = internships.filter((internship) => {
     // If the search bar is empty, this simply returns true for everything
+    if (internship.status === "finalized") return false;
     if (!searchQuery) return true;
 
     const query = searchQuery.toLowerCase();

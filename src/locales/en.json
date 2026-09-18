@@ -34,7 +34,8 @@
     "toApply": "To Apply",
     "waitingForResponse": "Waiting for Response",
     "consideringOffer": "Considering Offer",
-    "accepted": "Accepted"
+    "accepted": "Accepted",
+    "finalized": "Finalized"
   },
   "list": {
     "title": "List",
@@ -47,6 +48,8 @@
     "progress": "Progress"
   },
   "internshipWindow": {
+    "finalize": "Finalize",
+    "finalized": "Finalized",
     "tabs": {
       "overview": {
         "title": "Overview",

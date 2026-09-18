@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import HoldToConfirmButton from "./HoldToConfirmButton.js";
 import { useTranslatedLists } from "../hooks/useTranslatedLists";
 import { useAIFit } from "../hooks/useAIFit";
 import CompanyLogo from "./CompanyLogo.js";
@@ -13,6 +14,7 @@ import {
   Clock3,
   Star,
   Bookmark,
+  Check,
 } from "lucide-react";
 import {
   getDaysUntil,
@@ -61,6 +63,7 @@ export default function InternshipWindow({
     company: internship?.company || "",
     role: internship?.role || "",
     category: internship?.category || "",
+    status: internship?.status || "",
     deadline: internship?.deadline || "",
     excerpt: internship?.excerpt || "",
     location: internship?.location || "",
@@ -95,6 +98,7 @@ export default function InternshipWindow({
     company,
     role,
     id,
+    status,
     deadline,
     category,
     excerpt,
@@ -106,15 +110,19 @@ export default function InternshipWindow({
   } = internship || {};
   let statusName;
   let statusStyle;
-  statusList.map((s, i) => {
-    let array = s.name.split(" ");
-    array[0] = array[0].toLowerCase();
-    if (array.join("") === internship.status) {
-      statusName = statusListString[i];
-      statusStyle =
-        STATUS_STYLES[array.join("")] || "bg-gray-200 text-gray-800";
-    }
-  });
+  statusName = t(`board.${formData.status}`);
+  statusStyle = STATUS_STYLES[formData.status] || "bg-gray-200 text-gray-800";
+  /*useEffect(() => {
+    statusList.map((s, i) => {
+      let array = s.name.split(" ");
+      array[0] = array[0].toLowerCase();
+      if (array.join("") === internship.status) {
+        //statusName = statusListString[i];
+        statusStyle =
+          STATUS_STYLES[array.join("")] || "bg-gray-200 text-gray-800";
+      }
+    });
+  }, formData.status);*/
 
   const { handleAIFit } = useAIFit({
     internship,
@@ -212,7 +220,7 @@ export default function InternshipWindow({
       onClick={closeWindow} // Optional: closes when clicking outside
     >
       <div
-        className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto py-6 px-6 relative flex flex-col overflow-hidden"
+        className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto pb-6 pt-8 px-6 relative flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute -top-0.75 left-3">
@@ -241,6 +249,34 @@ export default function InternshipWindow({
             />
           )}
         </div>
+        {formData.status === "accepted" && (
+          <div
+            className="flex gap-2 items-center justify-center absolute top-0 right-10 sm:right-22 rounded-b-lg bg-slate-50 border-b-2 border-r-2 border-l-2 border-slate-400 px-4 py-1 cursor-pointer w-35 hover:bg-slate-100 transition-all duration-200"
+            onClick={() => {
+              const newFormData = { ...formData, status: "finalized" };
+              setFormData(newFormData);
+            }}
+          >
+            <Check className="w-5 h-5 text-gray-400" />
+            <span className=" text-gray-500 font-medium">
+              {t("internshipWindow.finalize")}
+            </span>
+          </div>
+        )}
+        {formData.status === "finalized" && (
+          <div
+            className="flex gap-3 items-center absolute top-0 right-10 sm:right-22 rounded-b-lg bg-green-100 hover:bg-green-200 border-b-2 border-r-2 border-l-2 border-green-400 px-4 py-1 cursor-pointer w-35 transition-all duration-200"
+            onClick={() => {
+              const newFormData = { ...formData, status: "accepted" };
+              setFormData(newFormData);
+            }}
+          >
+            <Check className="w-5 h-5 text-green-400 font-medium" />
+            <span className=" text-green-600 font-medium">
+              {t("internshipWindow.finalized")}
+            </span>
+          </div>
+        )}
         <div className="shrink-0">
           <div className="flex justify-between items-center mb-2">
             <div className="flex flex-row gap-4 items-center">
