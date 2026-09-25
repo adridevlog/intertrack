@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
 import HoldToConfirmButton from "./HoldToConfirmButton.js";
 import { useTranslatedLists } from "../hooks/useTranslatedLists";
@@ -26,6 +26,7 @@ import {
   useInternship,
   useUser,
   usePersonalContext,
+  useEvaluationCriteria,
 } from "../context/InternshipContext.js";
 import { updateInternship, deleteInternship } from "../tools/firebaseActions";
 import { GoogleGenAI } from "@google/genai";
@@ -49,15 +50,15 @@ export default function InternshipWindow({
   internship,
 
   setInternshipWindow,
-  statusList,
-  evaluationWeights,
 }) {
+  const backdropPointerDown = useRef(false);
   const { t } = useTranslation();
   const {
     statusListString,
     internshipWindowCriteria,
     internshipWindowViewsStrings,
   } = useTranslatedLists();
+  const { evaluationCriteria, setEvaluationCriteria } = useEvaluationCriteria();
 
   const [formData, setFormData] = useState({
     company: internship?.company || "",
@@ -68,18 +69,22 @@ export default function InternshipWindow({
     excerpt: internship?.excerpt || "",
     location: internship?.location || "",
     salary: internship?.salary || "",
-    duration: internship?.duration || "",
+    duration: internship?.duration || 0,
     requirements: internship?.requirements || [],
     interview: internship?.interview || { date: "", tips: "", notes: "" },
     evaluation: internship?.evaluation || { salary: 10 },
     marked: internship?.marked || false,
     AIFit: internship?.AIFit || "",
+    startDate: internship?.startDate || "",
   });
+  useEffect(() => {
+    console.log(formData.evaluation);
+  }, [formData.evaluation]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { setInternships, internships } = useInternship();
   const { user } = useUser();
   const { personalContext } = usePersonalContext();
-  const averageScore = calculateScore(formData.evaluation, evaluationWeights);
+  const averageScore = calculateScore(formData.evaluation, evaluationCriteria);
   const evaluationKeysWidth = calculateEvaluationKeyValue(formData.evaluation);
 
   const [activeView, setActiveView] = useState("Overview");
@@ -217,7 +222,17 @@ export default function InternshipWindow({
   return (
     <div
       className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-120 px-backdrop-blur-xs"
-      onClick={closeWindow} // Optional: closes when clicking outside
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) {
+          backdropPointerDown.current = true;
+        }
+      }}
+      onPointerUp={(e) => {
+        if (e.target === e.currentTarget && backdropPointerDown.current) {
+          closeWindow();
+        }
+        backdropPointerDown.current = false;
+      }}
     >
       <div
         className="w-[90%] max-w-3xl h-[90%]  bg-white rounded-2xl shadow-2xl overflow-y-auto pb-6 pt-8 px-6 relative flex flex-col overflow-hidden"
@@ -361,6 +376,13 @@ export default function InternshipWindow({
                   type="date"
                   handleChange={handleChange}
                 />
+                <OverviewBaseInput
+                  name="startDate"
+                  label="Start Date"
+                  valueInput={formData.startDate}
+                  type="date"
+                  handleChange={handleChange}
+                ></OverviewBaseInput>
               </div>
               <OverviewBaseInput
                 name="excerpt"
@@ -740,6 +762,7 @@ export default function InternshipWindow({
               </div>
               <div className="flex flex-col gap-4 w-full pb-6">
                 {Object.entries(formData.evaluation).map(([key, value], i) => {
+                  console.log(key);
                   const width = `w-[${evaluationKeysWidth}px]`;
                   return (
                     <div className="flex items-center" key={`evaluation${key}`}>
@@ -747,7 +770,7 @@ export default function InternshipWindow({
                         className={`text-gray-800 text-md font-medium whitespace-nowrap`}
                         style={{ width: `${evaluationKeysWidth}px` }}
                       >
-                        {internshipWindowCriteria[i]}
+                        {key}
                       </div>
                       <input
                         type="range"
@@ -842,18 +865,23 @@ const OverviewBaseInput = ({
 
 const OverviewBottomInput = ({ name, valueInput, handleChange, label }) => {
   const IconComponent = ICON_MAP[name.toLowerCase()] || MapPin;
+  console.log(name);
   return (
     <div className="flex flex-col gap-2 bg-gray-100 rounded-md p-2">
       <div className="text-gray-600 flex flex-row gap-1 items-center text-sm">
         <IconComponent className="w-4 h-4" />
         <p>{label}</p>
       </div>
-      <input
-        className="text-gray-900 text-sm rounded-md border border-gray-300 px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-semibold"
-        value={valueInput}
-        onChange={handleChange}
-        name={name}
-      ></input>
+      <div className="flex flex-nowrap gap-2">
+        <input
+          className={`text-gray-900 text-sm rounded-md border border-gray-300 px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-semibold ${name === "duration" && "w-20"}`}
+          type={name === "duration" ? "number" : "text"}
+          value={valueInput}
+          onChange={handleChange}
+          name={name}
+        ></input>
+        {name === "duration" && <span className="text-gray-700">weeks</span>}
+      </div>
     </div>
   );
 };

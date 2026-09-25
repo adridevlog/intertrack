@@ -123,3 +123,22 @@ export function prepareInternships(
   });
   return sortedInternships;
 }
+
+export function getMonthYearRange(startDate, durationInWeeks) {
+  const start = new Date(startDate);
+
+  // Create end date by adding the duration in days (weeks * 7)
+  const end = new Date(start.getTime());
+  end.setDate(start.getDate() + durationInWeeks * 7);
+
+  // Use Intl.DateTimeFormat for clean, localized "Month Year" strings
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  });
+
+  return {
+    startDate: formatter.format(start),
+    endDate: formatter.format(end),
+  };
+}

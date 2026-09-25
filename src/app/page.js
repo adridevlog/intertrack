@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import LayoutSelector from "../components/LayoutSelector";
 import { INITIAL_evaluationWeights } from "../data/evaluationWeights-mock";
@@ -9,12 +9,13 @@ import StatusColumn from "../components/StatusColumn";
 import InternshipList from "../components/InternshipList";
 import InternshipBoard from "../components/InternshipBoard";
 import InternshipWindow from "../components/InternshipWindow";
-import { newInternship } from "../data/newInternship";
+import { useNewInternship } from "../data/useNewInternship";
 import {
   useInternship,
   usePersonalContext,
   useActiveLayout,
   useSort,
+  useEvaluationCriteria,
 } from "../context/InternshipContext.js";
 import { addInternship } from "../tools/firebaseActions.js";
 import { calculateScore, prepareInternships } from "../tools/functions";
@@ -32,9 +33,7 @@ import { PersonalContextWindow } from "../components/PersonalContextWindow.js";
 
 export default function Home() {
   const { t, i18n } = useTranslation();
-  const changeLanguage = (e) => {
-    i18n.changeLanguage(e.target.value);
-  };
+  const scrollContainerRef = useRef(null);
   const { user, setUser } = useUser();
   const { loading, setLoading } = useLoading();
   const { activeLayout, setActiveLayout } = useActiveLayout();
@@ -50,6 +49,7 @@ export default function Home() {
   const [evaluationWeights, setEvaluationWeights] = useState(
     INITIAL_evaluationWeights,
   );
+  const { evaluationCriteria, setEvaluationCriteria } = useEvaluationCriteria();
   const { sort, setSort } = useSort();
 
   const handleLogin = async () => {
@@ -68,6 +68,7 @@ export default function Home() {
   const updateInternshipStatus = (internshipId, newStatus) => {
     updateInternship(internshipId, { status: newStatus }, user);
   };
+  const newInternship = useNewInternship();
 
   const handleAddInternship = async () => {
     // 1. Wait for Firebase to create it and give us the ID
@@ -78,12 +79,32 @@ export default function Home() {
       ...newInternship,
       id: newId,
     };
+    console.log(internshipWithId);
 
     // 3. Open the window using the object that now has the correct ID
     setInternshipWindow({
       active: true,
       internship: internshipWithId,
     });
+  };
+
+  const handleAutoScroll = (e) => {
+    if (!scrollContainerRef.current) return;
+
+    const container = scrollContainerRef.current;
+    const scrollSpeed = 15; // Pixels to move per frame
+    const edgeThreshold = 100; // How close to the edge (in pixels) activates scrolling
+
+    const { left, right } = container.getBoundingClientRect();
+
+    // If mouse is near the right edge, scroll right
+    if (right - e.clientX < edgeThreshold) {
+      container.scrollLeft += scrollSpeed;
+    }
+    // If mouse is near the left edge, scroll left
+    else if (e.clientX - left < edgeThreshold) {
+      container.scrollLeft -= scrollSpeed;
+    }
   };
 
   useEffect(() => {
@@ -107,7 +128,7 @@ export default function Home() {
     searchQuery,
     sort,
     statusList,
-    evaluationWeights,
+    evaluationCriteria,
   );
   const finalizedInternships = internships.filter(
     (internship) => internship.status === "finalized",
@@ -120,7 +141,9 @@ export default function Home() {
         <div className="absolute flex items-center gap-2 bg-gray-100 rounded-lg p-2 top-2 right-2">
           <Globe className="w-5 h-5 text-gray-500" />
           <select
-            onChange={changeLanguage}
+            onChange={(e) => {
+              updatePreferenceInCloud("language", e.target.value, user);
+            }}
             value={i18n.language}
             className="bg-transparent text-gray-700 font-medium focus:outline-none cursor-pointer"
           >
@@ -170,11 +193,7 @@ export default function Home() {
       {internshipWindow?.active && (
         <InternshipWindow
           internship={internshipWindow?.internship}
-          setInternships={setInternships}
           setInternshipWindow={setInternshipWindow}
-          statusList={statusList}
-          evaluationWeights={evaluationWeights}
-          internships={sortedInternships}
         ></InternshipWindow>
       )}
       {personalContext.active && (
@@ -190,17 +209,6 @@ export default function Home() {
             : ""
         }`}
       >
-        <div className="absolute flex items-center gap-2 bg-gray-100 rounded-lg p-2 top-25 right-6">
-          <Globe className="w-5 h-5 text-gray-500" />
-          <select
-            onChange={changeLanguage}
-            value={i18n.language}
-            className="bg-transparent text-gray-700 font-medium focus:outline-none cursor-pointer"
-          >
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-        </div>
         <div className="w-full flex flex-col sm:flex-row justify-between gap-10 items-start sm:items-center">
           <div className="flex flex-row text-black border border-gray-300 rounded-xl p-3 gap-2 bg-white">
             <LayoutSelector
@@ -247,7 +255,11 @@ export default function Home() {
 
         <div className="overflow-hidden w-full">
           {activeLayout === "board" && (
-            <div className="flex flex-row overflow-x-auto flex-nowrap w-full gap-5">
+            <div
+              className="flex flex-row overflow-x-auto flex-nowrap w-full gap-5"
+              ref={scrollContainerRef}
+              onDragOver={handleAutoScroll}
+            >
               {statusList.map((statusItem, i) => {
                 if (i === 4) return;
                 const { name, status } = statusItem;
@@ -258,7 +270,7 @@ export default function Home() {
                     internships={sortedInternships}
                     status={status}
                     setInternshipWindow={setInternshipWindow}
-                    evaluationWeights={evaluationWeights}
+                    evaluationWeights={evaluationCriteria}
                     handleStatusChange={updateInternshipStatus}
                     string={statusListString[i]}
                   ></StatusColumn>
@@ -285,7 +297,7 @@ export default function Home() {
                       internship={internship}
                       statusList={statusList}
                       setInternshipWindow={setInternshipWindow}
-                      evaluationWeights={evaluationWeights}
+                      evaluationWeights={evaluationCriteria}
                     />
                   ))}
                 </tbody>
@@ -311,7 +323,7 @@ export default function Home() {
                     key={internship.id}
                     internship={internship}
                     setInternshipWindow={setInternshipWindow}
-                    evaluationWeights={evaluationWeights}
+                    evaluationWeights={evaluationCriteria}
                   />
                 );
               })}

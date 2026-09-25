@@ -8,6 +8,7 @@ import {
   query,
   getDocs,
   where,
+  deleteField,
 } from "firebase/firestore";
 import { db } from "../../firebase.js";
 import { p } from "motion/react-client";
@@ -40,42 +41,25 @@ export const updatePreferenceInCloud = async (key, value, user) => {
   await setDoc(settingsDocRef, { [key]: value }, { merge: true });
 };
 
+export const deleteCriteriumInCloud = async (criteriumKey, user) => {
+  if (!user) return;
+  try {
+    // Make sure this path exactly matches your updatePreferenceInCloud path!
+    const docRef = doc(db, "users", user.uid, "config", "preferences");
+
+    // Using dot notation to target ONLY the specific criterium inside the map
+    await updateDoc(docRef, {
+      [`evaluationCriteria.${criteriumKey}`]: deleteField(),
+    });
+  } catch (error) {
+    console.error("Error deleting criterium:", error);
+  }
+};
+
 export const updatePersonalContext = async (updatedFields, user) => {
   const docRef = doc(db, "users", user.uid, "config", "personalContext");
   await setDoc(docRef, updatedFields);
 };
-
-/*export async function getUserByUsername(username) {
-  try {
-    if (!username) return null;
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("username", "==", username));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      return null; // No user found with that username
-    }
-    const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data();
-    const internshipsColRef = collection(
-      db,
-      "users",
-      userDoc.id,
-      "internships",
-    );
-    const internshipsSnapshot = await getDocs(internshipsColRef);
-    const internshipsData = internshipsSnapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
-    });
-    return {
-      id: userDoc.id,
-      internships: internshipsData,
-      ...userData,
-    };
-  } catch (error) {
-    console.error("Error fetching profile by username:", error);
-    return null;
-  }
-}*/
 
 export const editProfile = (key, value, user) => {
   if (!user) return;

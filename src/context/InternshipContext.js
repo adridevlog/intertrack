@@ -1,8 +1,9 @@
 "use client";
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { INITIAL_DATA } from "../data/internships-mock.js";
 import { useAuthenticationChanges } from "@/hooks/useAuthenticationChanges.js";
 import { useListenToData } from "@/hooks/useListenToData.js";
+import { INITIAL_evaluationWeights } from "@/data/evaluationWeights-mock.js";
 
 // 1. Create the Context
 const InternshipContext = createContext();
@@ -29,7 +30,17 @@ export function InternshipProvider({ children }) {
   });
 
   const [activeLayout, setActiveLayout] = useState("board");
+
   const [sort, setSort] = useState("status");
+
+  const [evaluationCriteria, setEvaluationCriteria] = useState(
+    INITIAL_evaluationWeights,
+  );
+
+  useEffect(() => {
+    console.log(evaluationCriteria);
+  }, [evaluationCriteria]);
+
   useAuthenticationChanges({ setInternships, setLoading, setUser });
   useListenToData({
     user,
@@ -39,6 +50,7 @@ export function InternshipProvider({ children }) {
     setActiveLayout,
     setSort,
     setProfile,
+    setEvaluationCriteria,
   });
 
   return (
@@ -62,6 +74,8 @@ export function InternshipProvider({ children }) {
         setSort,
         profile,
         setProfile,
+        evaluationCriteria,
+        setEvaluationCriteria,
       }}
     >
       {children}
@@ -99,5 +113,9 @@ export function useSort() {
 }
 
 export function useProfile() {
+  return useContext(InternshipContext);
+}
+
+export function useEvaluationCriteria() {
   return useContext(InternshipContext);
 }

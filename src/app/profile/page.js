@@ -1,6 +1,10 @@
 "use client";
 
-import { useUser, useProfile } from "@/context/InternshipContext";
+import {
+  useUser,
+  useProfile,
+  useEvaluationCriteria,
+} from "@/context/InternshipContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import UnpublishingInternship from "@/components/UnpublishingInternship";
@@ -10,6 +14,7 @@ import {
   checkUsernameAvailability,
   getPublicInternships,
 } from "@/tools/firebaseActions.js";
+import { calculateScore, getMonthYearRange } from "@/tools/functions";
 import Image from "next/image.js";
 import {
   PenLine,
@@ -25,6 +30,9 @@ import {
   LockOpen,
   CircleAlert,
   CirclePlus,
+  Heart,
+  MessageCircle,
+  Star,
 } from "lucide-react";
 import { interpolate } from "motion";
 import { useInternship } from "@/context/InternshipContext";
@@ -36,12 +44,14 @@ export function ProfileContent() {
   const router = useRouter();
   const profileUsername = searchParams.get("u");
   const { user } = useUser();
+  const { evaluationCriteria } = useEvaluationCriteria();
   const [isLoading, setIsLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
   const { internships } = useInternship();
   const [editing, setEditing] = useState({
     main: false,
     about: false,
+    internships: false,
     technicalSkills: false,
   });
   const { profile } = useProfile();
@@ -52,6 +62,7 @@ export function ProfileContent() {
     location: profile.location || "",
     technicalSkills: profile.technicalSkills || [],
     username: profile.username || "",
+    internships: [],
   });
   const [technicalSkillsInput, setTechnicalSkillsInput] = useState("");
 
@@ -66,12 +77,16 @@ export function ProfileContent() {
     internship: null,
   });
 
-  const publicInternships =
-    profileData?.internships?.filter((internship) => internship.isPublic) || [];
-  const publishableInternships =
-    profileData?.internships?.filter(
-      (internship) => internship.status === "finalized" && !internship.isPublic,
-    ) || [];
+  const publicInternships = profileData
+    ? profileData?.internships?.filter((internship) => internship.isPublic) ||
+      []
+    : [];
+  const publishableInternships = profileData
+    ? profileData?.internships?.filter(
+        (internship) =>
+          internship.status === "finalized" && !internship.isPublic,
+      ) || []
+    : [];
   const [formInternships, setFormInternships] = useState(() => {
     let form = {};
     publishableInternships.forEach((intern) => {
@@ -116,9 +131,30 @@ export function ProfileContent() {
     loadProfile();
   }, [profileUsername, user, internships, profile, router]);
 
+  /*useEffect(() => {
+    const asyncfunc = async () => {
+      const newInternships = [];
+      publicInternships.forEach((internship, i) => {
+        newInternships.push({
+          id: internship.id,
+          personalReview: internship.personalReview || "",
+        });
+      });
+      setFormData((prev) => ({
+        ...prev,
+        internships: newInternships,
+      }));
+    };
+    asyncfunc();
+  }, [publicInternships]);
+
+  useEffect(() => {
+    console.log(formData.internships);
+  }, [formData.internships]);*/
+
   useEffect(() => {
     const prepareUI = async () => {
-      if (formData.username === user?.username) {
+      if (formData?.username === user?.username) {
         setIsAvailable(true);
         setIsChecking(false);
         setUsernameMessage("");
@@ -130,13 +166,13 @@ export function ProfileContent() {
     };
 
     prepareUI();
-
-    if (formData.username === user?.username) return;
+    if (!formData || !user) return;
+    if (formData?.username === user?.username) return;
 
     // The Debounce Timer: Wait 500ms after they stop typing
     const delayDebounceFn = setTimeout(async () => {
       if (formData.username.length >= 4) {
-        const available = await checkUsernameAvailability(formData.username);
+        const available = await checkUsernameAvailability(formData?.username);
         if (!available) {
           setUsernameMessage("This username is not available");
         }
@@ -151,7 +187,12 @@ export function ProfileContent() {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [formData.username, user?.username]);
+  }, [formData, user]);
+
+  useEffect(() => {
+    if (!user || !profileData) return;
+    console.log(user, profileData);
+  }, [user, profileData]);
 
   const handleMainChanges = async () => {
     if (isAvailable) {
@@ -171,10 +212,6 @@ export function ProfileContent() {
       }
     }
   };
-  useEffect(() => {
-    console.log(formData.technicalSkills);
-    console.log(profile, profileData);
-  }, [formData.technicalSkills, profile, profileData]);
 
   return (
     <main className="flex flex-col pt-52 sm:pt-28 font-sans min-h-screen w-full h-full  p-8 bg-slate-50 gap-8">
@@ -187,6 +224,12 @@ export function ProfileContent() {
           <User className="w-12 h-12 text-gray-400" />
           <h2 className="text-2xl font-bold text-gray-700">User not found</h2>
           <p>This profile does not exist or the username was changed.</p>
+        </div>
+      ) : !profileData.isPublic && user.uid !== profileData.id ? (
+        <div className="min-h-screen flex flex-col items-center justify-center text-gray-500 gap-4">
+          <Lock className="w-12 h-12 text-gray-400" />
+          <h2 className="text-2xl font-bold text-gray-700">Private Profile</h2>
+          <p>This user has her profile private. </p>
         </div>
       ) : (
         <div className="relative flex flex-col gap-8">
@@ -222,20 +265,20 @@ export function ProfileContent() {
           {user.uid === profileData.id && (
             <div className="mt-14">
               {profile.isPublic ? (
-                <div className="flex flex-col gap-4 px-7 py-8 rounded-2xl border-2 border-gray-200 overflow-hidden mt-10">
+                <div className="flex flex-col gap-4 px-7 py-8 rounded-2xl border border-green-300 overflow-hidden mt-10 bg-green-100">
                   <div className="uppercase flex gap-3 items-center ">
-                    <LockOpen className="w-6 h-6 text-gray-500" />
-                    <span className="text-gray-500 text-lg font-semibold">
+                    <LockOpen className="w-6 h-6 text-green-700" />
+                    <span className="text-green-700 text-lg font-semibold">
                       Your profile status
                     </span>
                   </div>
-                  <div className="text-md text-gray-600">
+                  <div className="text-md text-green-600">
                     Your profile is public. You are now visible to peers and
                     entities.
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 px-7 py-8 rounded-2xl border-2 border-gray-200 overflow-hidden mt-10">
+                <div className="flex flex-col gap-4 px-7 py-8 rounded-2xl border-2 border-gray-300 overflow-hidden mt-10 bg-slate-100">
                   <div className="uppercase flex gap-3 items-center ">
                     <Lock className="w-6 h-6 text-gray-600" />
                     <span className="text-gray-500 text-lg font-semibold">
@@ -575,53 +618,201 @@ export function ProfileContent() {
                 <>
                   {publicInternships.length > 0 ? (
                     <>
-                      <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-6 relative">
                         <div className="flex items-center gap-3">
                           <Briefcase className="w-5 h-5 text-gray-600"></Briefcase>
                           <span className="font-bold text-gray-800 text-lg">
                             Internship log
                           </span>
                         </div>
-                        {publishableInternships.length > 0 && (
-                          <button
-                            className="flex items-center gap-3 text-gray-800 border text-md border-gray-300 rounded-lg px-5 py-1.5 hover:shadow-md bg-slate-50 hover:bg-blue-50 transition-all cursor-pointer font-medium"
-                            onClick={() => {
-                              setPublishingInternships(true);
-                            }}
-                          >
-                            <CirclePlus className="w-4 h-4 text-gray-700" />
-                            Publish
-                          </button>
-                        )}
+                        <div className="flex flex-row items-center gap-3">
+                          {publishableInternships.length > 0 && (
+                            <button
+                              className="flex items-center gap-3 text-gray-800 border text-md border-gray-300 rounded-lg px-5 py-1.5 hover:shadow-md bg-slate-50 hover:bg-blue-50 transition-all cursor-pointer font-medium"
+                              onClick={() => {
+                                setPublishingInternships(true);
+                              }}
+                            >
+                              <CirclePlus className="w-4 h-4 text-gray-700" />
+                              Publish
+                            </button>
+                          )}
+                          {user.uid === profileData.id &&
+                            !editing.internships && (
+                              <button
+                                className="flex items-center gap-3 text-gray-800     border text-md border-gray-300 rounded-lg px-5 py-1.5 hover:shadow-md bg-slate-50 hover:bg-blue-50 transition-all cursor-pointer font-medium"
+                                onClick={() => {
+                                  setEditing((prev) => ({
+                                    ...prev,
+                                    internships: true,
+                                  }));
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    internships: publicInternships.map(
+                                      (intern) => ({
+                                        id: intern.id,
+                                        personalReview:
+                                          intern.personalReview || "",
+                                      }),
+                                    ),
+                                  }));
+                                }}
+                              >
+                                <PenLine className="w-4 h-4 text-gray-700" />
+                                Edit
+                              </button>
+                            )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 gap-4 w-full">
-                        {publicInternships.map((internship) => (
-                          <div
-                            key={internship.id}
-                            className="border border-gray-200 rounded-lg p-4 relative w-full"
-                          >
-                            {user.uid === profileData.id && (
-                              <X
-                                className="absolute top-1 right-1 p-1.5 text-red-700 w-8 h-8 rounded-full hover:bg-slate-100 transition-all cursor-pointer"
-                                onClick={() => {
-                                  setUnpublishingInternship({
-                                    active: true,
-                                    internship: internship,
-                                  });
-                                }}
-                              ></X>
-                            )}
+                        {publicInternships.map((internship, i) => {
+                          const currentReview =
+                            formData.internships?.[i]?.personalReview ??
+                            internship.personalReview ??
+                            "";
+                          let start = undefined;
+                          let end = undefined;
+                          if (
+                            internship.startDate &&
+                            Number(internship.duration)
+                          ) {
+                            const dates = getMonthYearRange(
+                              internship?.startDate,
+                              Number(internship?.duration),
+                            );
 
-                            <h3 className="font-bold text-gray-800">
-                              {internship.role}
-                            </h3>
-                            <p className="text-gray-600">
-                              {internship.company}
-                            </p>
-                          </div>
-                        ))}
+                            start = dates.startDate;
+                            end = dates.endDate;
+                          }
+
+                          return (
+                            <div
+                              key={internship.id}
+                              className="border border-gray-200 rounded-lg p-4 relative w-full"
+                            >
+                              {user.uid === profileData.id &&
+                                editing.internships && (
+                                  <X
+                                    className="absolute top-1 right-1 p-1.5 text-red-700 w-8 h-8 rounded-full hover:bg-slate-100 transition-all cursor-pointer"
+                                    onClick={() => {
+                                      setUnpublishingInternship({
+                                        active: true,
+                                        internship: internship,
+                                      });
+                                    }}
+                                  ></X>
+                                )}
+                              {!editing.internships && (
+                                <div className="absolute top-3 right-3 py-1 px-3 rounded-full bg-slate-50 border border-slate-300   text-lg text-slate-500 font-semibold flex flex-row items-center gap-2">
+                                  <Star className="text-amber-500 fill-amber-500 w-4 h-4"></Star>
+                                  <span>
+                                    {calculateScore(
+                                      internship.evaluation,
+                                      evaluationCriteria,
+                                    )}
+                                  </span>
+                                </div>
+                              )}
+
+                              <h3 className="font-extrabold text-gray-800 text-xl">
+                                {internship.role}
+                              </h3>
+                              <p className="text-blue-800 text-md flex items-center gap-2 mt-1 font-medium">
+                                <Briefcase className="w-4 h-4 text-blue-800"></Briefcase>
+                                {internship.company}
+                              </p>
+                              {start && end && (
+                                <div className="flex gap-2 flex-nowrap text-gray-500 mt-3">
+                                  {start === end ? (
+                                    <div>start</div>
+                                  ) : (
+                                    <div>
+                                      {start} - {end}
+                                    </div>
+                                  )}
+                                  <div>|</div>
+                                  <div>{internship.duration} weeks</div>
+                                </div>
+                              )}
+
+                              {editing.internships ? (
+                                <textarea
+                                  className=" text-gray-700 focus:outline-none bg-gray-100 focus:bg-white focus:ring-3  ring-blue-50 rounded-lg font-medium px-4 py-3 w-full mt-3"
+                                  rows={4}
+                                  value={formData.internships[i].personalReview}
+                                  onChange={(e) => {
+                                    setFormData((prev) => {
+                                      const updatedInternships = [
+                                        ...prev.internships,
+                                      ];
+                                      if (updatedInternships[i]) {
+                                        updatedInternships[i] = {
+                                          ...updatedInternships[i],
+                                          personalReview: e.target.value,
+                                        };
+                                      }
+                                      return {
+                                        ...prev,
+                                        internships: updatedInternships,
+                                      };
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                <>
+                                  <div className="mt-3 text-gray-700 whitespace-pre-wrap">
+                                    {internship.personalReview
+                                      ? internship.personalReview
+                                      : "No review provided yet."}
+                                  </div>
+                                  <div className="flex items-center text-gray-600 gap-3 mt-10"></div>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
+                      {editing.internships && (
+                        <div className="flex gap-3 items-center mt-3 justify-end pr-4">
+                          <button
+                            className="text-red-600 font-medium text-lg rounded-lg hover:bg-slate-50 transition-all px-4 py-2 cursor-pointer"
+                            onClick={() => {
+                              const newEditing = {
+                                ...editing,
+                                internships: false,
+                              };
+                              setEditing(newEditing);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="text-blue-600 font-medium text-lg rounded-lg hover:bg-slate-50 transition-all px-4 py-2 cursor-pointer"
+                            onClick={async () => {
+                              /*editProfile("", formData.about, user);*/
+
+                              const updatePromises = formData.internships.map(
+                                (intern) =>
+                                  updateInternship(
+                                    intern.id,
+                                    { personalReview: intern.personalReview },
+                                    user,
+                                  ),
+                              );
+
+                              await Promise.all(updatePromises);
+
+                              setEditing((prev) => ({
+                                ...prev,
+                                internships: false,
+                              }));
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center gap-4 text-gray-500 py-20">

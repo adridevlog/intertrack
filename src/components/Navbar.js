@@ -18,7 +18,6 @@ import {
   usePersonalContext,
 } from "../context/InternshipContext.js";
 import { useState } from "react";
-import { newInternship } from "../data/newInternship.js";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase.js";
 import { LayoutDashboard } from "lucide-react";
@@ -138,15 +137,13 @@ export default function Navbar() {
                     </button>
                   </div>
                   <div className="p-1 border-b border-b-gray-300">
-                    <button
-                      onClick={() =>
-                        setPersonalContext({ ...personalContext, active: true })
-                      }
+                    <Link
+                      href="/settings"
                       className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                     >
                       <Settings className="w-4 h-4" />
                       Settings
-                    </button>
+                    </Link>
                   </div>
                   <div className="p-1">
                     <button
