@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { STATUS_STYLES } from "../data/STATUS_STYLES";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
-import HoldToConfirmButton from "./HoldToConfirmButton.js";
 import { useTranslatedLists } from "../hooks/useTranslatedLists";
 import { useAIFit } from "../hooks/useAIFit";
 import CompanyLogo from "./CompanyLogo.js";
@@ -15,6 +14,7 @@ import {
   Star,
   Bookmark,
   Check,
+  Globe,
 } from "lucide-react";
 import {
   getDaysUntil,
@@ -44,6 +44,7 @@ const internshipWindowViews = [
   "Requirements",
   "Interview",
   "Evaluation",
+  "Publish",
 ];
 
 export default function InternshipWindow({
@@ -788,6 +789,38 @@ export default function InternshipWindow({
                   );
                 })}
               </div>
+            </div>
+          )}
+          {activeView === "Publish" && (
+            <div className="flex flex-col w-full gap-8">
+              <div className="text-gray-600 text-lg">
+                When you publish this internship, it will appear in your profile
+                page. It will be visible to other users if your profile is
+                public
+              </div>
+              {formData.isPublic ? (
+                <button
+                  className="px-10 py-3 text-xl rounded-lg bg-indigo-500 text-white font-medium flex gap-3 justify-center items-center w-min self-center cursor-pointer"
+                  onClick={() => {
+                    const newFormData = { ...formData, isPublic: false };
+                    setFormData(newFormData);
+                  }}
+                >
+                  <Globe className="w-6 h-6 text-white"></Globe>
+                  Unpublish
+                </button>
+              ) : (
+                <button
+                  className="px-10 py-3 text-xl rounded-lg bg-indigo-500 text-white font-medium flex gap-3 justify-center items-center w-min self-center cursor-pointer hover:opacity-80 transition-all"
+                  onClick={() => {
+                    const newFormData = { ...formData, isPublic: true };
+                    setFormData(newFormData);
+                  }}
+                >
+                  <Globe className="w-6 h-6"></Globe>
+                  <span>Publish</span>
+                </button>
+              )}
             </div>
           )}
         </div>

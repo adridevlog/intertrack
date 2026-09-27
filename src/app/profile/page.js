@@ -14,6 +14,7 @@ import {
   checkUsernameAvailability,
   getPublicInternships,
 } from "@/tools/firebaseActions.js";
+import ProfileSkeleton from "@/components/Skeleton";
 import { calculateScore, getMonthYearRange } from "@/tools/functions";
 import Image from "next/image.js";
 import {
@@ -131,27 +132,6 @@ export function ProfileContent() {
     loadProfile();
   }, [profileUsername, user, internships, profile, router]);
 
-  /*useEffect(() => {
-    const asyncfunc = async () => {
-      const newInternships = [];
-      publicInternships.forEach((internship, i) => {
-        newInternships.push({
-          id: internship.id,
-          personalReview: internship.personalReview || "",
-        });
-      });
-      setFormData((prev) => ({
-        ...prev,
-        internships: newInternships,
-      }));
-    };
-    asyncfunc();
-  }, [publicInternships]);
-
-  useEffect(() => {
-    console.log(formData.internships);
-  }, [formData.internships]);*/
-
   useEffect(() => {
     const prepareUI = async () => {
       if (formData?.username === user?.username) {
@@ -216,9 +196,7 @@ export function ProfileContent() {
   return (
     <main className="flex flex-col pt-52 sm:pt-28 font-sans min-h-screen w-full h-full  p-8 bg-slate-50 gap-8">
       {isLoading ? (
-        <div className="min-h-screen flex items-center justify-center text-black ">
-          Loading profile...:
-        </div>
+        <ProfileSkeleton />
       ) : !profileData ? (
         <div className="min-h-screen flex flex-col items-center justify-center text-gray-500 gap-4">
           <User className="w-12 h-12 text-gray-400" />

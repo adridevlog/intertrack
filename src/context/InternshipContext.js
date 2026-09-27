@@ -20,7 +20,7 @@ export function InternshipProvider({ children }) {
 
   const [internships, setInternships] = useState(INITIAL_DATA);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState(null);
 

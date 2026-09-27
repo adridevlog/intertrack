@@ -39,6 +39,7 @@ export const useTranslatedLists = () => {
     t("internshipWindow.tabs.requirements.title"),
     t("internshipWindow.tabs.interview.title"),
     t("internshipWindow.tabs.evaluation.title"),
+    t("internshipWindow.tabs.publish.title"),
   ];
 
   const internshipWindowCriteria = [

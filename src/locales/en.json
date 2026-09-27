@@ -131,6 +131,9 @@
           "salary": "Salary",
           "prestige": "Prestige"
         }
+      },
+      "publish": {
+        "title": "Publish"
       }
     },
     "buttons": {

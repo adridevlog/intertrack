@@ -131,6 +131,9 @@
           "salary": "Salario",
           "prestige": "Prestigio"
         }
+      },
+      "publish": {
+        "title": "Publicar"
       }
     },
     "buttons": {
