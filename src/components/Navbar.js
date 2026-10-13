@@ -11,6 +11,9 @@ import {
   CircleUser,
   Globe,
   Settings,
+  Compass,
+  LayoutDashboard,
+  Users,
 } from "lucide-react";
 import {
   useInternship,
@@ -20,7 +23,6 @@ import {
 import { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase.js";
-import { LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
   const { t, i18n } = useTranslation();
@@ -48,7 +50,7 @@ export default function Navbar() {
 
   return (
     <nav className="z-100 fixed w-full flex items-center flex-row justify-between p-6  bg-white border-b-2 border-slate-200 font-sans gap-2 sm:gap-4 md:gap-10">
-      <div className="flex flex-1 flex-col items-start gap-7 sm:flex-row sm:gap-3 md:gap-10 sm:items-center">
+      <div className="flex flex-1 gap-7 flex-row sm:gap-3 md:gap-10 items-center">
         <div className="text-slate-800 text-2xl font-bold">
           {t("navbar.title")}
         </div>
@@ -56,7 +58,7 @@ export default function Navbar() {
           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 " />
           <input
             placeholder={t("navbar.searchPlaceholder")}
-            className="w-44 sm:w-48 md:flex md:flex-1 max-w-100 pl-10 rounded-4xl bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
+            className="w-28 sm:w-48 md:flex md:flex-1 max-w-100 pl-10 rounded-4xl bg-gray-100 py-2 px-2 focus:outline-none focus:ring-4 focus:ring-gray-100 focus:bg-white text-lg text-gray-700 transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             suppressHydrationWarning
@@ -64,13 +66,23 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 shrink-0">
+      <div className="flex flex-row items-center sm:items-center gap-1 sm:gap-4 shrink-0">
+        <Link
+          href="/discover"
+          className="flex flex-row  gap-3 items-center  hover:bg-slate-50 px-4 py-2 rounded-lg transition-all group"
+        >
+          <Compass className="w-6 h-6 text-gray-500 group-hover:text-indigo-500 transition-all" />
+          <span className="text-gray-600 text-lg font-medium group-hover:text-indigo-700 transition-all hidden lg:block">
+            Discover
+          </span>
+        </Link>
+
         <Link
           href="/"
           className="flex flex-row  gap-3 items-center  hover:bg-slate-50 px-4 py-2 rounded-lg transition-all group"
         >
           <LayoutDashboard className="w-6 h-6 text-gray-500 group-hover:text-indigo-500 transition-all" />
-          <span className="text-gray-600 text-lg font-medium group-hover:text-indigo-700 transition-all">
+          <span className="text-gray-600 text-lg font-medium group-hover:text-indigo-700 transition-all hidden lg:block">
             Dashboard
           </span>
         </Link>
@@ -123,6 +135,15 @@ export default function Navbar() {
                     >
                       <CircleUser className="w-4 h-4" />
                       {t("navbar.profile.personalProfile.title")}
+                    </Link>
+                  </div>
+                  <div className="p-1">
+                    <Link
+                      href="/network"
+                      className="w-full text-left px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Users className="w-4 h-4" />
+                      Network
                     </Link>
                   </div>
                   <div className="p-1">

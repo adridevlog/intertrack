@@ -1,12 +1,15 @@
 import { updateInternship } from "@/tools/firebaseActions";
 
-export default function UnpublishingInternship({
-  setUnpublishingInternship,
-  unpublishingInternship,
+export default function DecisionWindow({
+  setDecisionWindow,
+  decisionWindow,
   user,
+  text,
+  handleAccept,
+  acceptButtonText,
 }) {
   const closeWindow = () => {
-    setUnpublishingInternship(false);
+    setDecisionWindow(false);
   };
   return (
     <div
@@ -17,9 +20,7 @@ export default function UnpublishingInternship({
         className=" w-110 bg-white rounded-2xl shadow-2xl overflow-y-auto pb-6 px-6 pt-14 relative flex flex-col gap-12 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-lg text-center text-gray-700">
-          Are you sure you want to unpublish this internship?
-        </p>
+        <p className="text-lg text-center text-gray-700">{text}</p>
         <div className="flex justify-between items-center">
           <button
             className="hover:bg-slate-100 hover:text-gray-800 rounded-lg px-5 py-3 text-xl text-gray-600 font-medium  transition-all cursor-pointer"
@@ -30,15 +31,11 @@ export default function UnpublishingInternship({
           <button
             className="hover:bg-slate-100 hover:text-red-700 rounded-lg px-5 py-3 text-xl text-red-600 font-medium  transition-all cursor-pointer"
             onClick={() => {
-              updateInternship(
-                unpublishingInternship.internship.id,
-                { isPublic: false },
-                user,
-              );
+              handleAccept();
               closeWindow();
             }}
           >
-            Unpublish
+            {acceptButtonText}
           </button>
         </div>
       </div>

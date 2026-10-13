@@ -17,7 +17,7 @@ export default function StatusColumn({
     STATUS_STYLES[styleArray.join("")] || "bg-gray-200 text-gray-800";
 
   const handleDragOver = (e) => {
-    e.preventDefault(); // Crucial! Without this, the drop event will never fire.
+    e.preventDefault();
   };
 
   const handleDrop = (e) => {

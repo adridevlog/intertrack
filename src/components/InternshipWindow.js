@@ -15,6 +15,8 @@ import {
   Bookmark,
   Check,
   Globe,
+  Archive,
+  ArchiveX,
 } from "lucide-react";
 import {
   getDaysUntil,
@@ -29,6 +31,7 @@ import {
   useEvaluationCriteria,
 } from "../context/InternshipContext.js";
 import { updateInternship, deleteInternship } from "../tools/firebaseActions";
+import Location from "./Location.js";
 import { GoogleGenAI } from "@google/genai";
 
 const ICON_MAP = {
@@ -78,9 +81,7 @@ export default function InternshipWindow({
     AIFit: internship?.AIFit || "",
     startDate: internship?.startDate || "",
   });
-  useEffect(() => {
-    console.log(formData.evaluation);
-  }, [formData.evaluation]);
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { setInternships, internships } = useInternship();
   const { user } = useUser();
@@ -265,34 +266,7 @@ export default function InternshipWindow({
             />
           )}
         </div>
-        {formData.status === "accepted" && (
-          <div
-            className="flex gap-2 items-center justify-center absolute top-0 right-10 sm:right-22 rounded-b-lg bg-slate-50 border-b-2 border-r-2 border-l-2 border-slate-400 px-4 py-1 cursor-pointer w-35 hover:bg-slate-100 transition-all duration-200"
-            onClick={() => {
-              const newFormData = { ...formData, status: "finalized" };
-              setFormData(newFormData);
-            }}
-          >
-            <Check className="w-5 h-5 text-gray-400" />
-            <span className=" text-gray-500 font-medium">
-              {t("internshipWindow.finalize")}
-            </span>
-          </div>
-        )}
-        {formData.status === "finalized" && (
-          <div
-            className="flex gap-3 items-center absolute top-0 right-10 sm:right-22 rounded-b-lg bg-green-100 hover:bg-green-200 border-b-2 border-r-2 border-l-2 border-green-400 px-4 py-1 cursor-pointer w-35 transition-all duration-200"
-            onClick={() => {
-              const newFormData = { ...formData, status: "accepted" };
-              setFormData(newFormData);
-            }}
-          >
-            <Check className="w-5 h-5 text-green-400 font-medium" />
-            <span className=" text-green-600 font-medium">
-              {t("internshipWindow.finalized")}
-            </span>
-          </div>
-        )}
+
         <div className="shrink-0">
           <div className="flex justify-between items-center mb-2">
             <div className="flex flex-row gap-4 items-center">
@@ -302,14 +276,42 @@ export default function InternshipWindow({
                 {statusName}
               </p>
             </div>
-
-            <button
-              onClick={closeWindow}
-              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 
+            <div className="flex flex-row gap-2 items-center">
+              {formData.status === "archived" ? (
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-12 h-12 text-gray-500  hover:text-gray-700 hover:bg-gray-100 rounded-full cursor-pointer transition-all duration-100"
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      status: "toApply",
+                    }));
+                  }}
+                >
+                  <ArchiveX className="w-6 h-6" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="flex items-center justify-center w-12 h-12 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full cursor-pointer transition-all duration-100"
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      status: "archived",
+                    }));
+                  }}
+                >
+                  <Archive className="w-6 h-6" />
+                </button>
+              )}
+              <button
+                onClick={closeWindow}
+                className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 
             w-12 h-12 rounded-full font-bold text-xl cursor-pointer transition-all duration-100"
-            >
-              ✕
-            </button>
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
           <div className="text-gray-600">
@@ -763,7 +765,6 @@ export default function InternshipWindow({
               </div>
               <div className="flex flex-col gap-4 w-full pb-6">
                 {Object.entries(formData.evaluation).map(([key, value], i) => {
-                  console.log(key);
                   const width = `w-[${evaluationKeysWidth}px]`;
                   return (
                     <div className="flex items-center" key={`evaluation${key}`}>
@@ -898,7 +899,7 @@ const OverviewBaseInput = ({
 
 const OverviewBottomInput = ({ name, valueInput, handleChange, label }) => {
   const IconComponent = ICON_MAP[name.toLowerCase()] || MapPin;
-  console.log(name);
+
   return (
     <div className="flex flex-col gap-2 bg-gray-100 rounded-md p-2">
       <div className="text-gray-600 flex flex-row gap-1 items-center text-sm">

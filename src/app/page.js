@@ -81,7 +81,6 @@ export default function Home() {
       ...newInternship,
       id: newId,
     };
-    console.log(internshipWithId);
 
     // 3. Open the window using the object that now has the correct ID
     setInternshipWindow({
@@ -90,24 +89,37 @@ export default function Home() {
     });
   };
 
-  const handleAutoScroll = (e) => {
-    if (!scrollContainerRef.current) return;
+  useEffect(() => {
+    const handleGlobalDragOver = (e) => {
+      if (!scrollContainerRef.current) return;
 
-    const container = scrollContainerRef.current;
-    const scrollSpeed = 15; // Pixels to move per frame
-    const edgeThreshold = 100; // How close to the edge (in pixels) activates scrolling
+      const container = scrollContainerRef.current;
+      const scrollSpeed = 5;
+      const edgeThreshold = 100;
 
-    const { left, right } = container.getBoundingClientRect();
+      // 1. HORIZONTAL (Scrolls the specific board container)
+      const { left, right } = container.getBoundingClientRect();
+      if (right - e.clientX < edgeThreshold) {
+        container.scrollLeft += scrollSpeed;
+      } else if (e.clientX - left < edgeThreshold) {
+        container.scrollLeft -= scrollSpeed;
+      }
 
-    // If mouse is near the right edge, scroll right
-    if (right - e.clientX < edgeThreshold) {
-      container.scrollLeft += scrollSpeed;
-    }
-    // If mouse is near the left edge, scroll left
-    else if (e.clientX - left < edgeThreshold) {
-      container.scrollLeft -= scrollSpeed;
-    }
-  };
+      // 2. VERTICAL (Scrolls the whole window, even over the navbar)
+      if (e.clientY < edgeThreshold + 80) {
+        window.scrollBy(0, -scrollSpeed);
+      } else if (window.innerHeight - e.clientY < edgeThreshold) {
+        window.scrollBy(0, scrollSpeed);
+      }
+    };
+
+    // Attach to the whole document to eliminate the navbar "dead zone"
+    document.addEventListener("dragover", handleGlobalDragOver);
+
+    return () => {
+      document.removeEventListener("dragover", handleGlobalDragOver);
+    };
+  }, []); // Empty dependency array ensures it attaches once
 
   useEffect(() => {
     if (internshipWindow.active) {
@@ -132,8 +144,8 @@ export default function Home() {
     statusList,
     evaluationCriteria,
   );
-  const finalizedInternships = internships.filter(
-    (internship) => internship.status === "finalized",
+  const archivedInternships = internships.filter(
+    (internship) => internship.status === "archived",
   );
 
   if (loading) return <DashboardSkeleton />;
@@ -212,7 +224,7 @@ export default function Home() {
               <div
                 className="flex flex-row overflow-x-auto flex-nowrap w-full gap-5"
                 ref={scrollContainerRef}
-                onDragOver={handleAutoScroll}
+                //onDragOver={handleAutoScroll}
               >
                 {statusList.map((statusItem, i) => {
                   if (i === 4) return;
@@ -264,18 +276,15 @@ export default function Home() {
             )}
           </div>
           <div className="w-full h-full flex items-center justify-center p-8 border rounded-lg bg-white">
-            {finalizedInternships.length === 0 && (
-              <p className="text-gray-500">
-                No finalized internships found. Accept internships to finalize
-                them.
-              </p>
+            {archivedInternships.length === 0 && (
+              <p className="text-gray-500">No archived internships found.</p>
             )}
-            {finalizedInternships.length > 0 && (
+            {archivedInternships.length > 0 && (
               <div className="flex flex-col gap-4 w-full">
                 <div className="text-xl font-bold text-gray-800">
-                  Finalized Internships
+                  Archived Internships
                 </div>
-                {finalizedInternships.map((internship) => {
+                {archivedInternships.map((internship) => {
                   return (
                     <InternshipBoard
                       key={internship.id}

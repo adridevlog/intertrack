@@ -35,7 +35,7 @@
     "waitingForResponse": "Waiting for Response",
     "consideringOffer": "Considering Offer",
     "accepted": "Accepted",
-    "finalized": "Finalized"
+    "archived": "Archived"
   },
   "list": {
     "title": "List",
@@ -49,7 +49,7 @@
   },
   "internshipWindow": {
     "finalize": "Finalize",
-    "finalized": "Finalized",
+    "archived": "Archived",
     "tabs": {
       "overview": {
         "title": "Overview",

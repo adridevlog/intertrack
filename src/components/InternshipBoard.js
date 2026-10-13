@@ -99,10 +99,10 @@ export default function InternshipBoard({
             <div className="text-xs">{salary}</div>
           </div>
         )}
-        {duration && (
+        {Number(duration) > 0 && (
           <div className="rounded-lg p-2 bg-slate-100 text-gray-700 border border-slate-300 flex flex-row gap-1 items-center py-1 px-2">
             <Clock className="w-4 h-4 text-gray-700" />
-            <div className="text-xs">{duration}</div>
+            <div className="text-xs">{duration} weeks</div>
           </div>
         )}
       </div>

@@ -9,6 +9,12 @@ import {
   getDocs,
   where,
   deleteField,
+  arrayRemove,
+  arrayUnion,
+  limit,
+  startAfter,
+  collectionGroup,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebase.js";
 import { p } from "motion/react-client";
@@ -40,6 +46,32 @@ export const updatePreferenceInCloud = async (key, value, user) => {
   // By using [key]: value, this function can update ANY setting dynamically
   await setDoc(settingsDocRef, { [key]: value }, { merge: true });
 };
+
+export const updateUserDoc = async (updatedFields, user) => {
+  if (!user) return;
+  const userDocRef = doc(db, "users", user.uid);
+  await setDoc(userDocRef, updatedFields, { merge: true });
+};
+
+export const deleteNetwork = async (
+  networkType,
+  connectionUsername,
+  userId,
+) => {
+  if (!userId) return;
+  const docRef = doc(db, "users", userId);
+  await updateDoc(docRef, {
+    [networkType]: arrayRemove(connectionUsername),
+  });
+};
+
+export async function addNetwork(networkType, username, userId) {
+  if (!userId) return;
+  const docRef = doc(db, "users", userId);
+  await updateDoc(docRef, {
+    [networkType]: arrayUnion(username),
+  });
+}
 
 export const deleteCriteriumInCloud = async (criteriumKey, user) => {
   if (!user) return;
@@ -121,3 +153,63 @@ export async function getPublicInternships(targetUserId) {
     return [];
   }
 }
+
+export const getDiscoverPosts = async (lastDoc = null, fetchLimit = 12) => {
+  try {
+    const internshipsRef = collectionGroup(db, "internships");
+    const constraints = [
+      where("isPublic", "==", true),
+      orderBy("createdAt", "desc"), // CRITICAL: You must save a 'createdAt' timestamp when creating internships!
+    ];
+
+    if (lastDoc) constraints.push(startAfter(lastDoc));
+    constraints.push(limit(fetchLimit));
+
+    const q = query(internshipsRef, ...constraints);
+    const snapshot = await getDocs(q);
+
+    const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+    return { posts, lastDoc: newLastDoc };
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return { posts: [], lastDoc: null };
+  }
+};
+
+export const getDiscoverPeers = async (
+  lastDoc = null,
+  fetchLimit = 12,
+  user,
+  phase = "institution",
+) => {
+  try {
+    const usersRef = collection(db, "users");
+    const constraints = [where("isPublic", "==", true)];
+
+    // Phase 1: Only people at the same institution
+    if (phase === "institution" && user?.institution) {
+      constraints.push(where("institution", "==", user.institution));
+    }
+    // Phase 2: Only people in the same location
+    else if (phase === "location" && user?.location) {
+      constraints.push(where("location", "==", user.location));
+    }
+    // Phase 3 ("all") naturally runs with just isPublic == true
+
+    if (lastDoc) constraints.push(startAfter(lastDoc));
+    constraints.push(limit(fetchLimit));
+
+    const q = query(usersRef, ...constraints);
+    const snapshot = await getDocs(q);
+
+    const peers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+    return { peers, lastDoc: newLastDoc };
+  } catch (error) {
+    console.error("Error fetching peers:", error);
+    return { peers: [], lastDoc: null };
+  }
+};

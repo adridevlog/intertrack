@@ -14,7 +14,7 @@ export function InternshipProvider({ children }) {
     active: false,
     internship: null,
   });
-  const [profile, setProfile] = useState({});
+  //const [profile, setProfile] = useState({});
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -37,10 +37,6 @@ export function InternshipProvider({ children }) {
     INITIAL_evaluationWeights,
   );
 
-  useEffect(() => {
-    console.log(evaluationCriteria);
-  }, [evaluationCriteria]);
-
   useAuthenticationChanges({ setInternships, setLoading, setUser });
   useListenToData({
     user,
@@ -49,7 +45,8 @@ export function InternshipProvider({ children }) {
     setPersonalContext,
     setActiveLayout,
     setSort,
-    setProfile,
+    //setProfile,
+    setUser,
     setEvaluationCriteria,
   });
 
@@ -72,8 +69,8 @@ export function InternshipProvider({ children }) {
         setActiveLayout,
         sort,
         setSort,
-        profile,
-        setProfile,
+        //profile,
+        //setProfile,
         evaluationCriteria,
         setEvaluationCriteria,
       }}
@@ -109,10 +106,6 @@ export function useActiveLayout() {
 }
 
 export function useSort() {
-  return useContext(InternshipContext);
-}
-
-export function useProfile() {
   return useContext(InternshipContext);
 }
 

@@ -50,9 +50,6 @@ export default function Settings() {
     setCriteriumInput("");
   };
 
-  useEffect(() => {
-    console.log(evaluationCriteria);
-  }, [evaluationCriteria]);
   return (
     <main className="flex pt-52 sm:pt-28 font-sans min-h-screen w-full h-full  p-8 bg-slate-50 gap-8">
       <div className="flex flex-col gap-5 text-lg text-gray-700 border-r border-r-slate-400 pr-6 w-30 md:w-50">

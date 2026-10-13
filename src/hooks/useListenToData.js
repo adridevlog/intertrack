@@ -17,7 +17,7 @@ export const useListenToData = ({
   setPersonalContext,
   setActiveLayout,
   setSort,
-  setProfile,
+  setUser,
   setEvaluationCriteria,
 }) => {
   const { t, i18n } = useTranslation();
@@ -44,7 +44,7 @@ export const useListenToData = ({
     const unsubSettings = onSnapshot(settingsDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        console.log(data.evaluationCriteria);
+
         if (data.sort) setSort(data.sort || "status");
         if (data.layout) setActiveLayout(data.layout || "board");
         if (data.evaluationCriteria) {
@@ -81,10 +81,21 @@ export const useListenToData = ({
       },
     );
 
-    const unsubProfile = onSnapshot(profileDocRef, (docSnap) => {
+    /*const unsubProfile = onSnapshot(profileDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setProfile(data);
+      }
+    });*/
+
+    const unsubUserDoc = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Merge the real-time Firestore data into your existing user state
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...data,
+        }));
       }
     });
 
@@ -92,16 +103,16 @@ export const useListenToData = ({
       unsubSettings();
       unsubInternships();
       unsubPersonalContext();
-      unsubProfile();
+      unsubUserDoc();
     };
   }, [
-    user,
+    user?.uid,
     setInternships,
     setLoading,
     setPersonalContext,
     setActiveLayout,
     setSort,
-    setProfile,
+    setUser,
     setEvaluationCriteria,
     i18n,
   ]);
